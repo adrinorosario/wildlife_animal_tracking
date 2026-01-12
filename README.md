@@ -1,4 +1,4 @@
-# wildlife_tracker
+# Wildlife Animal Tracking App (in development)
 
 A new Flutter project.
 
