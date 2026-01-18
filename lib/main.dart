@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:wildlife_tracker/add_pin.dart';
 import 'package:wildlife_tracker/camera_capture.dart';
 
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.light,
         ),
       ),
-      home: const AddPin(),
+      home: const MyHomePage(title: "Wildlife Tracker"),
     );
   }
 }
@@ -36,14 +37,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -54,11 +47,21 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Colors.transparent,
         title: Text(widget.title),
       ),
-      body: Center(child: const Text("Hello world")),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.green,
+        onPressed: () {
+          showCupertinoSheet<void>(
+            context: context,
+            useNestedNavigation: false,
+            builder: (context) => AddPin(),
+          );
+        },
+        child: Icon(Icons.add),
+      ),
+      body: Stack(children: [
+
+        ]
       ),
     );
   }
