@@ -183,7 +183,6 @@ class _AddPinState extends State<AddPin> {
                       ),
                     );
                   },
-                  child: const Text("Submit Pin"),
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(200, 50),
                     textStyle: const TextStyle(
@@ -193,6 +192,7 @@ class _AddPinState extends State<AddPin> {
                     foregroundColor: Colors.white,
                     backgroundColor: Colors.green,
                   ),
+                  child: const Text("Submit Pin"),
                 ),
               ),
             ],
