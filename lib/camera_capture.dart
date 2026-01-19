@@ -59,7 +59,6 @@ class _CameraCaptureState extends State<CameraCapture> {
           children: [
             ElevatedButton(
               onPressed: () => pickImage(ImageSource.camera),
-              child: const Text("Take photo"),
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(200, 50),
                 textStyle: const TextStyle(
@@ -69,6 +68,7 @@ class _CameraCaptureState extends State<CameraCapture> {
                 foregroundColor: Colors.white,
                 backgroundColor: Colors.blueAccent,
               ),
+              child: const Text("Take photo"),
             ),
           ],
         ),
