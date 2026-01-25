@@ -1,0 +1,17 @@
+flutter_native_splash:
+  color: "#ffffff"
+  image: "assets/icon/icon.png"
+  branding: "assets/icon/icon.png"
+
+  android_12:
+    color: "#ffffff"
+    image: "assets/icon/icon.png"
+    icon_background_color: "#ffffff"
+
+  # Optional: Background Image
+  # If you want to try to match the Flutter splash exactly:
+  # background_image: "assets/background_image.jpg"
+
+  # For now, sticking to a clean white icon launch to transition into your nice header.
+  # If you prefer the background image immediately, uncomment the line below and remove 'color'.
+  # background_image: "assets/background_image.jpg"
