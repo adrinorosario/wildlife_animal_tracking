@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 ValueNotifier<AuthServices> authServices = ValueNotifier(AuthServices());
 
@@ -17,6 +18,28 @@ class AuthServices {
       email: email,
       password: password,
     );
+  }
+
+  //google sign in
+  Future<UserCredential?> signInWithGoogle() async {
+    // begin interative signin process
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // check if user cancels
+    if (googleUser == null) return null;
+
+    // obtain auth details from request
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+
+    // create a new credential for the user
+    final AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    //sign in
+    return await firebaseAuth.signInWithCredential(credential);
   }
 
   Future<UserCredential> signUp({
