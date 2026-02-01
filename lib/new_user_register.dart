@@ -1,9 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:sign_in_button/sign_in_button.dart';
+
 import 'package:wildlife_tracker/auth_services.dart';
+import 'package:wildlife_tracker/main.dart';
+import 'package:wildlife_tracker/user_login.dart';
 
 class NewUserRegister extends StatefulWidget {
-  NewUserRegister({Key? key}) : super(key: key);
+  const NewUserRegister({super.key});
 
   @override
   _NewUserRegisterState createState() => _NewUserRegisterState();
@@ -42,6 +47,12 @@ class _NewUserRegisterState extends State<NewUserRegister> {
         password: _passwordController.text,
       );
       print("User registered successfully");
+      Navigator.push(
+        context,
+        CupertinoPageRoute(
+          builder: (context) => MyHomePage(title: "Wildlife Tracker"),
+        ),
+      );
     } on FirebaseAuthException catch (e) {
       print(e.message);
     } finally {
@@ -55,15 +66,16 @@ class _NewUserRegisterState extends State<NewUserRegister> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Welcome to Wildlife Tracker",
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            fontFamily: "Poppins",
-          ),
-        ),
+        // title: const Text(
+        //   "Welcome to Wildlife Tracker",
+        //   style: TextStyle(
+        //     color: Colors.black,
+        //     fontSize: 24,
+        //     fontWeight: FontWeight.bold,
+        //     fontFamily: "Poppins",
+        //   ),
+        // ),
+        automaticallyImplyLeading: false,
       ),
       body: Center(
         child: Column(
@@ -72,6 +84,16 @@ class _NewUserRegisterState extends State<NewUserRegister> {
               padding: EdgeInsets.all(16),
               child: Column(
                 children: [
+                  const Text(
+                    "Welcome to Wildlife Tracker",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: "Poppins",
+                    ),
+                  ),
+                  SizedBox(height: 15),
                   Text(
                     "Create a new account using your email\n address and password",
                     textAlign: TextAlign.center,
@@ -139,6 +161,73 @@ class _NewUserRegisterState extends State<NewUserRegister> {
                                   ),
                                   child: Text("Create Account"),
                                 ),
+                          const SizedBox(height: 0),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Already have an account?",
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    CupertinoPageRoute(
+                                      builder: (context) => UserLogin(),
+                                    ),
+                                  );
+                                },
+                                child: Text(
+                                  "Login here",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 40),
+
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Or sign up with",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.blueGrey,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+
+                              //google sign in button
+                              SignInButton(
+                                onPressed: () =>
+                                    AuthServices().signInWithGoogle(),
+                                Buttons.google,
+                                text: "Sign up with Google",
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(0),
+                                ),
+                                // textStyle: TextStyle(
+                                //   fontSize: 16,
+                                //   fontFamily: "Poppins",
+                                // ),
+                                clipBehavior: Clip.hardEdge,
+                              ),
+                              const SizedBox(height: 0),
+
+                              //apple sign in button
+                              SignInButton(
+                                onPressed: () {},
+                                Buttons.apple,
+                                text: "Sign up with Apple",
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
