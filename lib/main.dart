@@ -35,8 +35,8 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.light,
         ),
       ),
-      // home: const SplashScreen(),
-      home: const MyHomePage(title: "Wildlife Tracker"),
+      home: const SplashScreen(),
+      // home: const MyHomePage(title: "Wildlife Tracker"),
     );
   }
 }
