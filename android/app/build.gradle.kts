@@ -8,6 +8,8 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+apply(from = project(":flutter_config_plus").projectDir.path + "/dotenv.gradle")
+
 android {
     namespace = "com.example.wildlife_tracker"
     compileSdk = flutter.compileSdkVersion
@@ -31,6 +33,17 @@ android {
         targetSdk = 30
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        manifestPlaceholders["GOOGLE_MAPS_API_KEY"] = if (project.extra.has("env")) {
+             val env = project.extra["env"] as Map<*, *>
+             (env["GOOGLE_MAPS_API_KEY"] ?: "").toString()
+        } else {
+            ""
+        }
+
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {

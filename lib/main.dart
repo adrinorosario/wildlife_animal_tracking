@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:wildlife_tracker/add_pin.dart';
+import 'dart:async';
 
+import 'package:wildlife_tracker/user_profile.dart';
+import 'package:wildlife_tracker/alert_notifications.dart';
+import 'package:wildlife_tracker/add_pin.dart';
 import 'package:wildlife_tracker/splash_screen.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+import 'package:flutter_config_plus/flutter_config_plus.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await FlutterConfigPlus.loadEnvVariables();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(MyApp());
 }
@@ -29,6 +36,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: const SplashScreen(),
+      // home: const MyHomePage(title: "Wildlife Tracker"),
     );
   }
 }
@@ -43,31 +51,94 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final Completer<GoogleMapController> _controller = Completer();
+  int _currentIndex = 0;
+
+  void _setNavigationIndex(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: Text(widget.title),
+        title: Text(
+          widget.title,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontSize: 24.0,
+          ),
+        ),
+        forceMaterialTransparency: true,
+        elevation: 0,
+        automaticallyImplyLeading: false,
       ),
-      floatingActionButton: FloatingActionButton(
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.green,
-        onPressed: () {
-          showCupertinoSheet<void>(
-            context: context,
-            useNestedNavigation: false,
-            builder: (context) => AddPin(),
-          );
-        },
-        child: Icon(Icons.add),
+      floatingActionButton: _currentIndex != 0
+          ? null
+          : FloatingActionButton(
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.green,
+              onPressed: () {
+                showCupertinoSheet<void>(
+                  context: context,
+                  useNestedNavigation: false,
+                  builder: (context) => AddPin(),
+                );
+              },
+              child: Icon(Icons.add),
+            ),
+      body: IndexedStack(
+        index: _currentIndex,
+        children: [
+          Stack(
+            children: [
+              GoogleMap(
+                initialCameraPosition: CameraPosition(
+                  target: LatLng(12.658833, 75.604339),
+                  zoom: 15,
+                ),
+                mapType: MapType.satellite,
+                myLocationEnabled: true,
+                compassEnabled: true,
+                onMapCreated: (GoogleMapController controller) {
+                  _controller.complete(controller);
+                },
+              ),
+            ],
+          ),
+          AlertNotifications(),
+          UserProfile(),
+        ],
       ),
-      body: Stack(children: [
-
-        ]
+      bottomNavigationBar: NavigationBar(
+        onDestinationSelected: _setNavigationIndex,
+        selectedIndex: _currentIndex,
+        indicatorColor: Colors.blue,
+        destinations: [
+          NavigationDestination(
+            selectedIcon: Icon(Icons.map),
+            icon: Icon(Icons.map_outlined),
+            label: "Map",
+          ),
+          NavigationDestination(
+            selectedIcon: Icon(Icons.notification_important_rounded),
+            icon: Icon(Icons.notification_important_outlined),
+            label: "Alerts",
+          ),
+          NavigationDestination(
+            selectedIcon: Icon(Icons.person_rounded),
+            icon: Icon(Icons.person_outlined),
+            label: "Profile",
+          ),
+        ],
       ),
     );
   }
