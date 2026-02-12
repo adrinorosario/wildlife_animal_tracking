@@ -78,164 +78,166 @@ class _NewUserRegisterState extends State<NewUserRegister> {
         automaticallyImplyLeading: false,
       ),
       body: Center(
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  const Text(
-                    "Welcome to Wildlife Tracker",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: "Poppins",
-                    ),
-                  ),
-                  SizedBox(height: 15),
-                  Text(
-                    "Create a new account using your email\n address and password",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, fontFamily: "Poppins"),
-                  ),
-                  SizedBox(height: 16),
-                  Form(
-                    key: _formKey,
-                    child: Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          TextFormField(
-                            controller: _emailController,
-                            autocorrect: false,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: "Email",
-                              hintText: "Enter your email address",
-                            ),
-                            validator: (value) {
-                              if (value == null ||
-                                  value.isEmpty ||
-                                  !value.contains("@")) {
-                                return 'Please enter a valid email address';
-                              }
-                              return null;
-                            },
-                          ),
-                          SizedBox(height: 16),
-                          TextFormField(
-                            controller: _passwordController,
-                            autocorrect: false,
-                            obscureText: true,
-                            obscuringCharacter: "●",
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: "Password",
-                              hintText: "Enter your password",
-                            ),
-                            validator: (value) {
-                              if (value == null ||
-                                  value.isEmpty ||
-                                  value.length < 6) {
-                                return 'Password must be at least 6 characters long';
-                              }
-                              return null;
-                            },
-                          ),
-                          SizedBox(height: 16),
-                          _isRegistering
-                              ? CircularProgressIndicator()
-                              : ElevatedButton(
-                                  onPressed: register,
-                                  style: ElevatedButton.styleFrom(
-                                    minimumSize: Size(200, 50),
-                                    backgroundColor: Colors.green,
-                                    foregroundColor: Colors.white,
-                                    textStyle: TextStyle(
-                                      fontSize: 16,
-                                      fontFamily: "Poppins",
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  child: Text("Create Account"),
-                                ),
-                          const SizedBox(height: 0),
-
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Already have an account?",
-                                style: TextStyle(fontSize: 16),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    CupertinoPageRoute(
-                                      builder: (context) => UserLogin(),
-                                    ),
-                                  );
-                                },
-                                child: Text(
-                                  "Login here",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 40),
-
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Or sign up with",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.blueGrey,
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-
-                              //google sign in button
-                              SignInButton(
-                                onPressed: () =>
-                                    AuthServices().signInWithGoogle(),
-                                Buttons.google,
-                                text: "Sign up with Google",
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(0),
-                                ),
-                                // textStyle: TextStyle(
-                                //   fontSize: 16,
-                                //   fontFamily: "Poppins",
-                                // ),
-                                clipBehavior: Clip.hardEdge,
-                              ),
-                              const SizedBox(height: 0),
-
-                              //apple sign in button
-                              SignInButton(
-                                onPressed: () {},
-                                Buttons.apple,
-                                text: "Sign up with Apple",
-                              ),
-                            ],
-                          ),
-                        ],
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    const Text(
+                      "Welcome to Wildlife Tracker",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: "Poppins",
                       ),
                     ),
-                  ),
-                ],
+                    SizedBox(height: 15),
+                    Text(
+                      "Create a new account using your email\n address and password",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 16, fontFamily: "Poppins"),
+                    ),
+                    SizedBox(height: 16),
+                    Form(
+                      key: _formKey,
+                      child: Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            TextFormField(
+                              controller: _emailController,
+                              autocorrect: false,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: "Email",
+                                hintText: "Enter your email address",
+                              ),
+                              validator: (value) {
+                                if (value == null ||
+                                    value.isEmpty ||
+                                    !value.contains("@")) {
+                                  return 'Please enter a valid email address';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 16),
+                            TextFormField(
+                              controller: _passwordController,
+                              autocorrect: false,
+                              obscureText: true,
+                              obscuringCharacter: "●",
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: "Password",
+                                hintText: "Enter your password",
+                              ),
+                              validator: (value) {
+                                if (value == null ||
+                                    value.isEmpty ||
+                                    value.length < 6) {
+                                  return 'Password must be at least 6 characters long';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 16),
+                            _isRegistering
+                                ? CircularProgressIndicator()
+                                : ElevatedButton(
+                                    onPressed: register,
+                                    style: ElevatedButton.styleFrom(
+                                      minimumSize: Size(200, 50),
+                                      backgroundColor: Colors.green,
+                                      foregroundColor: Colors.white,
+                                      textStyle: TextStyle(
+                                        fontSize: 16,
+                                        fontFamily: "Poppins",
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    child: Text("Create Account"),
+                                  ),
+                            const SizedBox(height: 0),
+
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Already have an account?",
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      CupertinoPageRoute(
+                                        builder: (context) => UserLogin(),
+                                      ),
+                                    );
+                                  },
+                                  child: Text(
+                                    "Login here",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 40),
+
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Or sign up with",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.blueGrey,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+
+                                //google sign in button
+                                SignInButton(
+                                  onPressed: () =>
+                                      AuthServices().signInWithGoogle(),
+                                  Buttons.google,
+                                  text: "Sign up with Google",
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(0),
+                                  ),
+                                  // textStyle: TextStyle(
+                                  //   fontSize: 16,
+                                  //   fontFamily: "Poppins",
+                                  // ),
+                                  clipBehavior: Clip.hardEdge,
+                                ),
+                                const SizedBox(height: 0),
+
+                                //apple sign in button
+                                SignInButton(
+                                  onPressed: () {},
+                                  Buttons.apple,
+                                  text: "Sign up with Apple",
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
