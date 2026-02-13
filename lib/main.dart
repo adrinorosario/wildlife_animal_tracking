@@ -5,7 +5,8 @@ import 'dart:async';
 import 'package:wildlife_tracker/user_profile.dart';
 import 'package:wildlife_tracker/alert_notifications.dart';
 import 'package:wildlife_tracker/add_pin.dart';
-import 'package:wildlife_tracker/splash_screen.dart';
+import 'package:wildlife_tracker/auth_layout.dart';
+import 'package:wildlife_tracker/user_login.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -13,10 +14,17 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:flutter_config_plus/flutter_config_plus.dart';
 
+import 'package:flutter_map/flutter_map.dart';
+// import 'package:latlong2/latlong.dart';
+import 'package:geolocator/geolocator.dart';
+
+import 'package:google_sign_in/google_sign_in.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FlutterConfigPlus.loadEnvVariables();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await GoogleSignIn.instance.initialize();
   runApp(MyApp());
 }
 
@@ -28,15 +36,17 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'Wildlife Tracker',
       theme: ThemeData(
-        colorScheme: .fromSeed(
+        colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.deepPurple,
           brightness: Brightness.light,
         ),
       ),
-      home: const SplashScreen(),
-      // home: const MyHomePage(title: "Wildlife Tracker"),
+      home: AuthLayout(
+        pageIfNotConnected: const UserLogin(),
+        child: const MyHomePage(title: "Wildlife Tracker"),
+      ),
     );
   }
 }
