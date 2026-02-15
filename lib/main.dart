@@ -14,9 +14,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:flutter_config_plus/flutter_config_plus.dart';
 
-import 'package:flutter_map/flutter_map.dart';
 // import 'package:latlong2/latlong.dart';
-import 'package:geolocator/geolocator.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
 
