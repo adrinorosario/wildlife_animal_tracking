@@ -45,6 +45,7 @@ dependencies:
   firebase_auth: ^6.1.4
   flutter_launcher_icons: ^0.14.4
   flutter_native_splash: ^2.3.1
+<<<<<<< HEAD
   google_sign_in: ^7.2.0
   sign_in_button: ^4.0.1
   flutter_config_plus: ^1.1.1
@@ -52,6 +53,11 @@ dependencies:
   geolocator: ^14.0.2
   flutter_map: ^8.2.2
   latlong2: ^0.9.1
+=======
+  google_sign_in: ^6.2.2
+  sign_in_button: ^4.0.1
+  flutter_config_plus: ^1.1.1
+>>>>>>> origin/master
 
 dev_dependencies:
   flutter_test:

@@ -5,18 +5,25 @@ import 'dart:async';
 import 'package:wildlife_tracker/user_profile.dart';
 import 'package:wildlife_tracker/alert_notifications.dart';
 import 'package:wildlife_tracker/add_pin.dart';
+<<<<<<< HEAD
 import 'package:wildlife_tracker/auth_layout.dart';
 import 'package:wildlife_tracker/user_login.dart';
+=======
+import 'package:wildlife_tracker/splash_screen.dart';
+>>>>>>> origin/master
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:flutter_config_plus/flutter_config_plus.dart';
+<<<<<<< HEAD
 
 // import 'package:latlong2/latlong.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
+=======
+>>>>>>> origin/master
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,10 +48,15 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.light,
         ),
       ),
+<<<<<<< HEAD
       home: AuthLayout(
         pageIfNotConnected: const UserLogin(),
         child: const MyHomePage(title: "Wildlife Tracker"),
       ),
+=======
+      home: const SplashScreen(),
+      // home: const MyHomePage(title: "Wildlife Tracker"),
+>>>>>>> origin/master
     );
   }
 }
