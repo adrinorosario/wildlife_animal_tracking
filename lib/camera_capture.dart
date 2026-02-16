@@ -17,14 +17,27 @@ class _CameraCaptureState extends State<CameraCapture> {
 
   // the method that will pick the image of the animal
   Future<void> pickImage(ImageSource source) async {
-    //pick the image using the camera
-    final pickedImage = await picker.pickImage(source: source);
+    try {
+      //pick the image using the camera
+      final pickedImage = await picker.pickImage(source: source);
 
-    // updated the selected image
-    if (pickedImage != null) {
-      setState(() {
-        image = File(pickedImage.path);
-      });
+      // updated the selected image
+      if (pickedImage != null) {
+        setState(() {
+          image = File(pickedImage.path);
+        });
+      }
+    } catch (e) {
+      debugPrint("Error picking image: $e");
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Permission denied. Please enable camera access in settings.',
+            ),
+          ),
+        );
+      }
     }
   }
 

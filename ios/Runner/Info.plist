@@ -69,6 +69,9 @@
     <true />
     <key>UIApplicationSupportsIndirectInputEvents</key>
     <true />
+<<<<<<< HEAD
+
+=======
     <key>CFBundleURLTypes</key>
     <array>
       <dict>
@@ -81,6 +84,7 @@
         </array>
       </dict>
     </array>
+>>>>>>> origin/master
     <key>UIStatusBarHidden</key>
     <false />
   </dict>
