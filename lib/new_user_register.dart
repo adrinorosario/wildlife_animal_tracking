@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 
 import 'package:wildlife_tracker/auth_services.dart';
 import 'package:wildlife_tracker/main.dart';
+import 'package:wildlife_tracker/user_login.dart';
+import 'package:sign_in_button/sign_in_button.dart';
 
 class NewUserRegister extends StatefulWidget {
   const NewUserRegister({super.key});
@@ -205,7 +207,7 @@ class _NewUserRegisterState extends State<NewUserRegister> {
                                 //google sign in button
                                 SignInButton(
                                   onPressed: () =>
-                                      AuthServices().signInWithGoogle(),
+                                      authServices.value.signInWithGoogle(),
                                   Buttons.google,
                                   text: "Sign up with Google",
                                   shape: RoundedRectangleBorder(
