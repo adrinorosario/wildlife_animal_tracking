@@ -22,24 +22,28 @@ class AuthServices {
 
   //google sign in
   Future<UserCredential?> signInWithGoogle() async {
-    // begin interative signin process
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    try {
+      // begin interative signin process
+      final GoogleSignInAccount googleUser = await GoogleSignIn.instance
+          .authenticate();
 
-    // check if user cancels
-    if (googleUser == null) return null;
+      // obtain auth details from request
+      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+      final GoogleSignInClientAuthorization? googleAuthz = await googleUser
+          .authorizationClient
+          .authorizationForScopes([]);
 
-    // obtain auth details from request
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
+      // create a new credential for the user
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuthz?.accessToken,
+        idToken: googleAuth.idToken,
+      );
 
-    // create a new credential for the user
-    final AuthCredential credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-
-    //sign in
-    return await firebaseAuth.signInWithCredential(credential);
+      //sign in
+      return await firebaseAuth.signInWithCredential(credential);
+    } catch (e) {
+      return null;
+    }
   }
 
   Future<UserCredential> signUp({
