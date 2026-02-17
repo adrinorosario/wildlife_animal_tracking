@@ -5,8 +5,13 @@ import 'dart:async';
 import 'package:wildlife_tracker/user_profile.dart';
 import 'package:wildlife_tracker/alert_notifications.dart';
 import 'package:wildlife_tracker/add_pin.dart';
+<<<<<<< Updated upstream
 import 'package:wildlife_tracker/auth_layout.dart';
 import 'package:wildlife_tracker/user_login.dart';
+=======
+import 'package:wildlife_tracker/splash_screen.dart';
+import 'package:wildlife_tracker/map_view.dart';
+>>>>>>> Stashed changes
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -41,10 +46,15 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.light,
         ),
       ),
+<<<<<<< Updated upstream
       home: AuthLayout(
         pageIfNotConnected: const UserLogin(),
         child: const MyHomePage(title: "Wildlife Tracker"),
       ),
+=======
+      // home: const SplashScreen(),
+      home: const MyHomePage(title: "Wildlife Tracker"),
+>>>>>>> Stashed changes
     );
   }
 }
@@ -106,25 +116,28 @@ class _MyHomePageState extends State<MyHomePage> {
       body: IndexedStack(
         index: _currentIndex,
         children: [
-          Stack(
-            children: [
-              GoogleMap(
-                initialCameraPosition: CameraPosition(
-                  target: LatLng(12.658833, 75.604339),
-                  zoom: 15,
-                ),
-                mapType: MapType.satellite,
-                myLocationEnabled: true,
-                compassEnabled: true,
-                onMapCreated: (GoogleMapController controller) {
-                  _controller.complete(controller);
-                },
-              ),
-            ],
-          ),
-          AlertNotifications(),
-          UserProfile(),
-        ],
+          // Stack(
+        //       GoogleMap(
+        //         initialCameraPosition: CameraPosition(
+        //           target: LatLng(12.658833, 75.604339),
+        //           zoom: 15,
+        //         ),
+        //         mapType: MapType.satellite,
+        //         myLocationEnabled: true,
+        //         compassEnabled: true,
+        //         onMapCreated: (GoogleMapController controller) {
+        //           _controller.complete(controller);
+        //         },
+        //       ),
+        //     ],
+        //   ),
+        //   AlertNotifications(),
+        //   UserProfile(),
+        // ],
+  const MapView(), // Your clean, isolated map file
+  AlertNotifications(),
+  UserProfile(),
+],
       ),
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: _setNavigationIndex,
