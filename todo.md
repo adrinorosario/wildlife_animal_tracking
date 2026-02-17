@@ -45,4 +45,4 @@
 - [ ] What are the edge cases that these integrations need to consider?
 - [ ] What are the bottlenecks these new features create for the existing features?
 
-
+- [ ] Add a feature that allows the user to report inaccurate predictions when an image in uploaded
