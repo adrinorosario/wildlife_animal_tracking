@@ -22,8 +22,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FlutterConfigPlus.loadEnvVariables();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await GoogleSignIn.instance
-      .initialize(); // must be monitored to not get a NoSuchMethodError at runtime
+  await GoogleSignIn.instance.initialize();
   runApp(MyApp());
 }
 
