@@ -21,10 +21,10 @@ packages:
     dependency: transitive
     description:
       name: archive
-      sha256: "2fde1607386ab523f7a36bb3e7edb43bd58e6edaf2ffb29d8a6d578b297fdbbd"
+      sha256: "16a4a4610a4375e2cfe0db0985bd817935219c627f8fd25a4b2a5b408ed34e64"
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.7"
+    version: "4.0.8"
   args:
     dependency: transitive
     description:
@@ -61,32 +61,18 @@ packages:
     dependency: transitive
     description:
       name: camera_android_camerax
-<<<<<<< HEAD
       sha256: "8516fe308bc341a5067fb1a48edff0ddfa57c0d3cdcc9dbe7ceca3ba119e2577"
       url: "https://pub.dev"
     source: hosted
     version: "0.6.30"
-=======
-      sha256: "1abae0a9853401ee875d7f99e9ec5083335f0aab6edf6eb9a219756143a1b3a8"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.6.29"
->>>>>>> origin/master
   camera_avfoundation:
     dependency: transitive
     description:
       name: camera_avfoundation
-<<<<<<< HEAD
       sha256: "11b4aee2f5e5e038982e152b4a342c749b414aa27857899d20f4323e94cb5f0b"
       url: "https://pub.dev"
     source: hosted
     version: "0.9.23+2"
-=======
-      sha256: a600b60a7752cc5fa9de476cd0055539d7a3b9d62662f4f446bae49eba2267df
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.9.22+9"
->>>>>>> origin/master
   camera_platform_interface:
     dependency: transitive
     description:
@@ -422,7 +408,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "10.12.0"
-<<<<<<< HEAD
   geoclue:
     dependency: transitive
     description:
@@ -487,8 +472,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.5"
-=======
->>>>>>> origin/master
   glob:
     dependency: transitive
     description:
@@ -533,17 +516,10 @@ packages:
     dependency: transitive
     description:
       name: google_maps_flutter_ios
-<<<<<<< HEAD
       sha256: "38f0a9ee858b0de3a5105e7efe200f154eea8397eb0c36bea6b3810429fbc0e4"
       url: "https://pub.dev"
     source: hosted
     version: "2.17.3"
-=======
-      sha256: "72812231d1c2051a42f1ae82e2860eb761d4b0c01a5d59213d399521fcb8a8d3"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.17.0"
->>>>>>> origin/master
   google_maps_flutter_platform_interface:
     dependency: transitive
     description:
@@ -564,67 +540,38 @@ packages:
     dependency: "direct main"
     description:
       name: google_sign_in
-<<<<<<< HEAD
       sha256: "521031b65853b4409b8213c0387d57edaad7e2a949ce6dea0d8b2afc9cb29763"
       url: "https://pub.dev"
     source: hosted
     version: "7.2.0"
-=======
-      sha256: d0a2c3bcb06e607bb11e4daca48bd4b6120f0bbc4015ccebbe757d24ea60ed2a
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.3.0"
->>>>>>> origin/master
   google_sign_in_android:
     dependency: transitive
     description:
       name: google_sign_in_android
-<<<<<<< HEAD
       sha256: "5ec98ab35387c68c0050495bb211bd88375873723a80fae7c2e9266ea0bdd8bb"
       url: "https://pub.dev"
     source: hosted
     version: "7.2.7"
-=======
-      sha256: d5e23c56a4b84b6427552f1cf3f98f716db3b1d1a647f16b96dbb5b93afa2805
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.2.1"
->>>>>>> origin/master
   google_sign_in_ios:
     dependency: transitive
     description:
       name: google_sign_in_ios
-<<<<<<< HEAD
       sha256: ac1e4c1205267cb7999d1d81333fccffdfda29e853f434bbaf71525498bb6950
       url: "https://pub.dev"
     source: hosted
     version: "6.3.0"
-=======
-      sha256: "102005f498ce18442e7158f6791033bbc15ad2dcc0afa4cf4752e2722a516c96"
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.9.0"
->>>>>>> origin/master
   google_sign_in_platform_interface:
     dependency: transitive
     description:
       name: google_sign_in_platform_interface
-<<<<<<< HEAD
       sha256: "7f59208c42b415a3cca203571128d6f84f885fead2d5b53eb65a9e27f2965bb5"
       url: "https://pub.dev"
     source: hosted
     version: "3.1.0"
-=======
-      sha256: "5f6f79cf139c197261adb6ac024577518ae48fdff8e53205c5373b5f6430a8aa"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.5.0"
->>>>>>> origin/master
   google_sign_in_web:
     dependency: transitive
     description:
       name: google_sign_in_web
-<<<<<<< HEAD
       sha256: "2fc1f941e6443b2d6984f4056a727a3eaeab15d8ee99ba7125d79029be75a1da"
       url: "https://pub.dev"
     source: hosted
@@ -637,27 +584,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.8"
-=======
-      sha256: "460547beb4962b7623ac0fb8122d6b8268c951cf0b646dd150d60498430e4ded"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.12.4+4"
->>>>>>> origin/master
   hooks:
     dependency: transitive
     description:
       name: hooks
-<<<<<<< HEAD
       sha256: "7a08a0d684cb3b8fb604b78455d5d352f502b68079f7b80b831c62220ab0a4f6"
       url: "https://pub.dev"
     source: hosted
     version: "1.0.1"
-=======
-      sha256: "5d309c86e7ce34cd8e37aa71cb30cb652d3829b900ab145e4d9da564b31d59f7"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
->>>>>>> origin/master
   html:
     dependency: transitive
     description:
@@ -770,7 +704,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.10.0"
-<<<<<<< HEAD
   latlong2:
     dependency: "direct main"
     description:
@@ -779,8 +712,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.9.1"
-=======
->>>>>>> origin/master
   leak_tracker:
     dependency: transitive
     description:
@@ -813,7 +744,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.0"
-<<<<<<< HEAD
   lists:
     dependency: transitive
     description:
@@ -830,8 +760,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.6.2"
-=======
->>>>>>> origin/master
   logging:
     dependency: transitive
     description:
@@ -892,7 +820,6 @@ packages:
     dependency: transitive
     description:
       name: objective_c
-<<<<<<< HEAD
       sha256: "100a1c87616ab6ed41ec263b083c0ef3261ee6cd1dc3b0f35f8ddfa4f996fe52"
       url: "https://pub.dev"
     source: hosted
@@ -913,12 +840,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.1"
-=======
-      sha256: "983c7fa1501f6dcc0cb7af4e42072e9993cb28d73604d25ebf4dab08165d997e"
-      url: "https://pub.dev"
-    source: hosted
-    version: "9.2.5"
->>>>>>> origin/master
   path:
     dependency: "direct main"
     description:
@@ -979,10 +900,10 @@ packages:
     dependency: transitive
     description:
       name: petitparser
-      sha256: "1a97266a94f7350d30ae522c0af07890c70b8e62c71e8e3920d1db4d23c057d1"
+      sha256: "91bd59303e9f769f108f8df05e371341b15d59e995e6806aefab827b58336675"
       url: "https://pub.dev"
     source: hosted
-    version: "7.0.1"
+    version: "7.0.2"
   platform:
     dependency: transitive
     description:
