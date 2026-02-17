@@ -101,21 +101,32 @@ class _UserLoginState extends State<UserLogin> {
                   ),
                   SizedBox(height: 16),
                   Form(
+                    key: _formKey,
                     child: Padding(
                       padding: EdgeInsets.all(16.0),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           TextFormField(
+                            controller: _emailController,
                             autocorrect: false,
                             decoration: InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: "Email",
                               hintText: "Enter your email address",
                             ),
+                            validator: (value) {
+                              if (value == null ||
+                                  value.isEmpty ||
+                                  !value.contains("@")) {
+                                return 'Please enter a valid email address';
+                              }
+                              return null;
+                            },
                           ),
                           SizedBox(height: 16),
                           TextFormField(
+                            controller: _passwordController,
                             autocorrect: false,
                             obscureText: true,
                             obscuringCharacter: "●",
@@ -124,22 +135,32 @@ class _UserLoginState extends State<UserLogin> {
                               labelText: "Password",
                               hintText: "Enter your password",
                             ),
+                            validator: (value) {
+                              if (value == null ||
+                                  value.isEmpty ||
+                                  value.length < 6) {
+                                return 'Password must be at least 6 characters long';
+                              }
+                              return null;
+                            },
                           ),
                           SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: Size(200, 50),
-                              backgroundColor: Colors.green,
-                              foregroundColor: Colors.white,
-                              textStyle: TextStyle(
-                                fontSize: 16,
-                                fontFamily: "Poppins",
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            child: Text("Login"),
-                          ),
+                          _isLoggingIn
+                              ? CircularProgressIndicator()
+                              : ElevatedButton(
+                                  onPressed: login,
+                                  style: ElevatedButton.styleFrom(
+                                    minimumSize: Size(200, 50),
+                                    backgroundColor: Colors.green,
+                                    foregroundColor: Colors.white,
+                                    textStyle: TextStyle(
+                                      fontSize: 16,
+                                      fontFamily: "Poppins",
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  child: Text("Login"),
+                                ),
                           const SizedBox(height: 0),
 
                           Row(
@@ -185,7 +206,7 @@ class _UserLoginState extends State<UserLogin> {
                               //google sign in button
                               SignInButton(
                                 onPressed: () =>
-                                    AuthServices().signInWithGoogle(),
+                                    authServices.value.signInWithGoogle(),
                                 Buttons.google,
                                 text: "Login with Google",
                                 shape: RoundedRectangleBorder(
