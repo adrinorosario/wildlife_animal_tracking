@@ -13,9 +13,9 @@ plugins {
 // Check if the plugin exists before trying to apply its gradle script
 // Line 11 (or thereabouts) in android/app/build.gradle.kts
 // This works without needing the settings.gradle edit
-if (File("${rootProject.projectDir}/../.env").exists()) {
-    apply(from = "../../node_modules/flutter_config_plus/android/dotenv.gradle") 
-}
+// if (File("${rootProject.projectDir}/../.env").exists()) {
+//     apply(from = "../../node_modules/flutter_config_plus/android/dotenv.gradle") 
+// }
 
 android {
     namespace = "com.example.wildlife_tracker"
