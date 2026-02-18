@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "165880788591",
+    "project_id": "wildlife-tracker-af2be",
+    "storage_bucket": "wildlife-tracker-af2be.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:165880788591:android:67ca46610762106874bf9a",
+        "android_client_info": {
+          "package_name": "com.example.wildlife_tracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "165880788591-ov12o12ugdgargjpdjf22ui1q0jn4gpc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.wildlife_tracker",
+            "certificate_hash": "67a3288263fc0a6fab10126ef3d379f21ee8a582"
+          }
+        },
+        {
+          "client_id": "165880788591-58ue3ukr17lgs9gc9l6tgdlk79gkda8f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjRZd_BIE1q0CN3XmmZBnn-wZNSm-qsv8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "165880788591-58ue3ukr17lgs9gc9l6tgdlk79gkda8f.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "165880788591-kiaaijn4gbsu3kfcdfn9fusmglppbogf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.wildlifeTracker"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

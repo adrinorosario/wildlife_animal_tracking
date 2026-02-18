@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:wildlife_tracker/add_pin.dart';
-import 'package:wildlife_tracker/camera_capture.dart';
 
 void main() {
   runApp(const MyApp());
