@@ -58,6 +58,9 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
 
+final GlobalKey<MapViewState> mapViewKey = GlobalKey<MapViewState>();
+
+
   void _setNavigationIndex(int index) {
     setState(() {
       _currentIndex = index;
@@ -87,19 +90,36 @@ class _MyHomePageState extends State<MyHomePage> {
           : FloatingActionButton(
               foregroundColor: Colors.white,
               backgroundColor: Colors.green,
-              onPressed: () {
-                // Your teammate's AddPin sheet
-                showCupertinoModalPopup(
-                  context: context,
-                  builder: (context) => const AddPin(),
-                );
-              },
+              // onPressed: () {
+              //   // Your teammate's AddPin sheet
+              //   showCupertinoModalPopup(
+              //     context: context,
+              //     builder: (context) => const AddPin(),
+              //   );
+              // }, replacing with real pins added
+
+              onPressed: () async {
+  final result = await showCupertinoModalPopup(
+    context: context,
+    builder: (context) => const AddPin(),
+  );
+
+  if (result != null) {
+    mapViewKey.currentState?.addExternalMarker(
+      result["latitude"],
+      result["longitude"],
+      result["pinType"],
+    );
+  }
+},
+
+
               child: const Icon(Icons.add),
             ),
       body: IndexedStack(
         index: _currentIndex,
         children: [
-          const MapView(), // Your isolated map file
+          MapView(key: mapViewKey,), // Your isolated map file
           AlertNotifications(),
           UserProfile(),
         ],

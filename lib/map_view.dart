@@ -19,10 +19,10 @@ class MapView extends StatefulWidget {
   const MapView({super.key});
 
   @override
-  State<MapView> createState() => _MapViewState();
+  MapViewState createState() => MapViewState();
 }
 
-class _MapViewState extends State<MapView> {
+class MapViewState extends State<MapView> {
   final Completer<GoogleMapController> _controller = Completer();
   
   // Initial Position: Coorg/Western Ghats region
@@ -40,6 +40,33 @@ class _MapViewState extends State<MapView> {
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
     ),
   };
+
+  void addExternalMarker(double lat, double lng, String title) async {
+  final markerId =
+      MarkerId(DateTime.now().millisecondsSinceEpoch.toString());
+
+  setState(() {
+    _markers.add(
+      Marker(
+        markerId: markerId,
+        position: LatLng(lat, lng),
+        infoWindow: InfoWindow(title: title),
+        icon: BitmapDescriptor.defaultMarkerWithHue(
+          BitmapDescriptor.hueGreen,
+        ),
+      ),
+    );
+  });
+
+   print("Marker added at: $lat , $lng");
+  print("Total markers now: ${_markers.length}");
+
+  final controller = await _controller.future;
+  controller.animateCamera(
+    CameraUpdate.newLatLngZoom(LatLng(lat, lng), 17),
+  );
+}
+
 
   // 3. UI Method to show the photo preview
   void _showPhotoPreview(WildlifeSighting sighting) {
@@ -123,18 +150,18 @@ class _MapViewState extends State<MapView> {
         // Positioned(
         //   bottom: 120, // Positioned above the bottom nav bar
         //   right: 20,
-          child: FloatingActionButton(
-            backgroundColor: Colors.orange,
-            child: const Icon(Icons.camera_enhance, color: Colors.white),
-            onPressed: () {
-              // Simulating the "Take Photo" result
-              _addSightingToMap(WildlifeSighting(
-                position: const LatLng(12.6595, 75.6055), // Slightly offset from center
-                title: "New Tiger Sighting",
-                imagePath: "temp_path",
-              ));
-            },
-          ),
+        //   child: FloatingActionButton(
+        //     backgroundColor: Colors.orange,
+        //     child: const Icon(Icons.camera_enhance, color: Colors.white),
+        //     onPressed: () {
+        //       // Simulating the "Take Photo" result
+        //       _addSightingToMap(WildlifeSighting(
+        //         position: const LatLng(12.6595, 75.6055), // Slightly offset from center
+        //         title: "New Tiger Sighting",
+        //         imagePath: "temp_path",
+        //       ));
+        //     },
+        //   ),
         // ),
       ],
     );

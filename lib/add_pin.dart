@@ -3,6 +3,7 @@ import "package:wildlife_tracker/camera_capture.dart";
 import 'package:collection/collection.dart';
 
 import 'package:toggle_switch/toggle_switch.dart';
+import 'package:geolocator/geolocator.dart';
 
 
 enum PinType {
@@ -48,6 +49,25 @@ class _AddPinState extends State<AddPin> {
     ),
   );
   String dropDownValue = PinType.values.first.title;
+
+Future<Position> _getCurrentLocation() async {
+  bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    throw Exception("Location services disabled");
+  }
+
+  LocationPermission permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+  }
+
+  if (permission == LocationPermission.deniedForever) {
+    throw Exception("Location permanently denied");
+  }
+
+  return await Geolocator.getCurrentPosition();
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -159,32 +179,55 @@ class _AddPinState extends State<AddPin> {
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: ElevatedButton(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text(
-                          "Pin submitted",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        duration: const Duration(seconds: 2),
-                        width: 300,
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        backgroundColor: Colors.green[500],
-                        action: SnackBarAction(
-                          label: "Dismiss",
-                          textColor: Colors.white,
-                          onPressed: () {},
-                        ),
-                      ),
-                    );
+                  // onPressed: () {
+                  //   ScaffoldMessenger.of(context).showSnackBar(
+                  //     SnackBar(
+                  //       content: const Text(
+                  //         "Pin submitted",
+                  //         style: TextStyle(
+                  //           fontSize: 14,
+                  //           fontWeight: FontWeight.bold,
+                  //         ),
+                  //       ),
+                  //       duration: const Duration(seconds: 2),
+                  //       width: 300,
+                  //       padding: const EdgeInsets.symmetric(horizontal: 10),
+                  //       behavior: SnackBarBehavior.floating,
+                  //       shape: RoundedRectangleBorder(
+                  //         borderRadius: BorderRadius.circular(10),
+                  //       ),
+                  //       backgroundColor: Colors.green[500],
+                  //       action: SnackBarAction(
+                  //         label: "Dismiss",
+                  //         textColor: Colors.white,
+                  //         onPressed: () {},
+                  //       ),
+                  //     ),
+                  //   );
+                  // },  replacing this with real coordinates
+                  onPressed: () async {
+                  try {
+                  Position position = await _getCurrentLocation();
+
+                   print("Submitting pin...");
+    print("Lat: ${position.latitude}");
+    print("Lng: ${position.longitude}");
+    
+                  Navigator.pop(
+                  context,
+                  {
+                  "pinType": dropDownValue,
+                  "latitude": position.latitude,
+                  "longitude": position.longitude,
                   },
+                  );
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Location error")),
+    );
+  }
+},
+
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(200, 50),
                     textStyle: const TextStyle(
