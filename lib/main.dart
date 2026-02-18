@@ -38,8 +38,10 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.light,
         ),
       ),
-      // Bypassing AuthLayout/SplashScreen for now to show your Map
-      home: const MyHomePage(title: "Wildlife Tracker"),
+      home: AuthLayout(
+        pageIfNotConnected: const UserLogin(),
+        child: const MyHomePage(title: "Wildlife Tracker"),
+      ),
     );
   }
 }
