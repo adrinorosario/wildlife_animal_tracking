@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'dart:async';
 
 import 'package:wildlife_tracker/user_profile.dart';
 import 'package:wildlife_tracker/alert_notifications.dart';
 import 'package:wildlife_tracker/add_pin.dart';
 import 'package:wildlife_tracker/auth_layout.dart';
 import 'package:wildlife_tracker/user_login.dart';
-import 'package:wildlife_tracker/splash_screen.dart';
 import 'package:wildlife_tracker/map_view.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_config_plus/flutter_config_plus.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
