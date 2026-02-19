@@ -136,6 +136,7 @@ class MapViewState extends State<MapView> {
             target: _initialCenter,
             zoom: 15.0,
           ),
+          padding: const EdgeInsets.only(top: 90.0, right: 2.0),
           mapType: MapType.satellite,
           myLocationEnabled: true,
           myLocationButtonEnabled: true,
