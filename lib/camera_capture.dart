@@ -1,7 +1,17 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
-
 import 'package:image_picker/image_picker.dart';
+
+// Ensure SavannahColors is accessible (either imported or defined here)
+class SavannahColors {
+  static const Color beigeLight = Color(0xFFF6F1E1);
+  static const Color beigeDark = Color(0xFFECE6D4);
+  static const Color white = Color(0xFFFFFFFF);
+  static const Color greenOlive = Color(0xFF4F5D2F);
+  static const Color greenDeep = Color(0xFF3E4A24);
+  static const Color textBlack = Color(0xFF1F1F1F);
+  static const Color textGrey = Color(0xFF4B4B4B);
+}
 
 class CameraCapture extends StatefulWidget {
   const CameraCapture({super.key});
@@ -11,16 +21,11 @@ class CameraCapture extends StatefulWidget {
 }
 
 class _CameraCaptureState extends State<CameraCapture> {
-  File? image; // thios is the image that will be captured from the camera
+  File? image;
+  final picker = ImagePicker();
 
-  final picker = ImagePicker(); // this is the image picker
-
-  // the method that will pick the image of the animal
   Future<void> pickImage(ImageSource source) async {
-    //pick the image using the camera
     final pickedImage = await picker.pickImage(source: source);
-
-    // updated the selected image
     if (pickedImage != null) {
       setState(() {
         image = File(pickedImage.path);
@@ -30,47 +35,95 @@ class _CameraCaptureState extends State<CameraCapture> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      //crossAxisAlignment: CrossAxisAlignment.stretch,
+    return Stack(
+      alignment: Alignment.bottomCenter,
       children: [
-        // display the image
-        // ? Check whether to use AnimatedSwitcher or AspectRatio
-        Expanded(
+        // Image Display Area
+        Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: BoxDecoration(
+            color: SavannahColors.beigeDark.withOpacity(0.5),
+          ),
           child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 300),
-            transitionBuilder: (Widget child, Animation<double> animation) {
-              return ScaleTransition(scale: animation, child: child);
-            },
             child: image != null
-                ? Image.file(image!, width: double.infinity, fit: BoxFit.cover)
-                : Container(
+                ? Image.file(
+                    key: ValueKey(image!.path),
+                    image!,
                     width: double.infinity,
-                    color: Colors.grey,
-                    child: const Center(child: Text("No image selected")),
+                    height: double.infinity,
+                    fit: BoxFit.cover,
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(
+                        Icons.image_search_rounded,
+                        size: 48,
+                        color: SavannahColors.greenOlive,
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        "Tap to capture animal",
+                        style: TextStyle(
+                          color: SavannahColors.greenOlive,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
                   ),
           ),
         ),
-        const SizedBox(height: 12),
 
-        // the camera buttons
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () => pickImage(ImageSource.camera),
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(200, 50),
-                textStyle: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+        // Camera Trigger Button (Floating Overlay Style)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16.0),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => pickImage(ImageSource.camera),
+              borderRadius: BorderRadius.circular(30),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
                 ),
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.blueAccent,
+                decoration: BoxDecoration(
+                  color: SavannahColors.greenDeep.withOpacity(0.9),
+                  borderRadius: BorderRadius.circular(30),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Icon(
+                      Icons.camera_alt_rounded,
+                      color: SavannahColors.white,
+                      size: 20,
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      "TAKE PHOTO",
+                      style: TextStyle(
+                        color: SavannahColors.white,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              child: const Text("Take photo"),
             ),
-          ],
+          ),
         ),
       ],
     );

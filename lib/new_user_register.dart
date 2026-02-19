@@ -1,9 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-
 import 'package:wildlife_tracker/auth_services.dart';
-import 'package:wildlife_tracker/main.dart';
+import 'package:wildlife_tracker/main.dart' hide SavannahColors;
 import 'package:wildlife_tracker/user_login.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 
@@ -15,14 +14,9 @@ class NewUserRegister extends StatefulWidget {
 }
 
 class _NewUserRegisterState extends State<NewUserRegister> {
-  // a global key to for the form to track its state and validation
   final _formKey = GlobalKey<FormState>();
-
-  // text editing controllers to get the input that the user enters in the text fields
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
-  // a variable to check if the registration is in progress
   bool _isRegistering = false;
 
   @override
@@ -33,212 +27,295 @@ class _NewUserRegisterState extends State<NewUserRegister> {
   }
 
   void register() async {
-    if (!_formKey.currentState!.validate()) {
-      return; // do nothing when the form is not valid
-    }
+    if (!_formKey.currentState!.validate()) return;
 
-    setState(() {
-      _isRegistering = true;
-    });
+    setState(() => _isRegistering = true);
 
     try {
       await authServices.value.signUp(
         email: _emailController.text,
         password: _passwordController.text,
       );
-      print("User registered successfully");
-      Navigator.push(
-        context,
-        CupertinoPageRoute(
-          builder: (context) => MyHomePage(title: "Wildlife Tracker"),
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          CupertinoPageRoute(builder: (context) => MyHomePage(title: "Animap")),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message ?? "Registration Failed"),
+          backgroundColor: SavannahColors.orangeCaramel,
         ),
       );
-    } on FirebaseAuthException catch (e) {
-      print(e.message);
     } finally {
-      setState(() {
-        _isRegistering = false;
-      });
+      if (mounted) setState(() => _isRegistering = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+
     return Scaffold(
-      appBar: AppBar(
-        // title: const Text(
-        //   "Welcome to Wildlife Tracker",
-        //   style: TextStyle(
-        //     color: Colors.black,
-        //     fontSize: 24,
-        //     fontWeight: FontWeight.bold,
-        //     fontFamily: "Poppins",
-        //   ),
-        // ),
-        automaticallyImplyLeading: false,
-      ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    const Text(
-                      "Welcome to Wildlife Tracker",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: "Poppins",
+      backgroundColor: SavannahColors.beigeLight,
+      resizeToAvoidBottomInset: true,
+      body: Stack(
+        children: [
+          Container(
+            height: screenSize.height,
+            width: screenSize.width,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: NetworkImage(
+                  'https://images.unsplash.com/photo-1516422317950-ad91d73a54d4?auto=format&fit=crop&q=80&w=1000',
+                ),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  SavannahColors.beigeLight.withOpacity(0.4),
+                  SavannahColors.beigeLight.withOpacity(0.9),
+                  SavannahColors.beigeLight,
+                ],
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 40),
+                      Icon(
+                        Icons.person_add_rounded,
+                        size: 80,
+                        color: SavannahColors.greenDeep,
                       ),
-                    ),
-                    SizedBox(height: 15),
-                    Text(
-                      "Create a new account using your email\n address and password",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 16, fontFamily: "Poppins"),
-                    ),
-                    SizedBox(height: 16),
-                    Form(
-                      key: _formKey,
-                      child: Padding(
-                        padding: EdgeInsets.all(16.0),
+                      const SizedBox(height: 10),
+                      Text(
+                        "JOIN THE HERD",
+                        style: TextStyle(
+                          letterSpacing: 4.0,
+                          fontWeight: FontWeight.w900,
+                          color: SavannahColors.textBlack,
+                          fontSize: 24,
+                        ),
+                      ),
+                      Text(
+                        "START YOUR CONSERVATION JOURNEY",
+                        style: TextStyle(
+                          letterSpacing: 1.2,
+                          color: SavannahColors.orangeCaramel,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 10,
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                      Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: SavannahColors.white.withOpacity(0.9),
+                          borderRadius: BorderRadius.circular(28),
+                          border: Border.all(color: SavannahColors.beigeDark),
+                        ),
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            TextFormField(
+                            _buildTextField(
                               controller: _emailController,
-                              autocorrect: false,
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: "Email",
-                                hintText: "Enter your email address",
-                              ),
-                              validator: (value) {
-                                if (value == null ||
-                                    value.isEmpty ||
-                                    !value.contains("@")) {
-                                  return 'Please enter a valid email address';
-                                }
-                                return null;
-                              },
+                              label: "EMAIL",
+                              icon: Icons.email_outlined,
+                              hint: "new.ranger@savannah.com",
                             ),
-                            SizedBox(height: 16),
-                            TextFormField(
+                            const SizedBox(height: 20),
+                            _buildTextField(
                               controller: _passwordController,
-                              autocorrect: false,
-                              obscureText: true,
-                              obscuringCharacter: "●",
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: "Password",
-                                hintText: "Enter your password",
-                              ),
-                              validator: (value) {
-                                if (value == null ||
-                                    value.isEmpty ||
-                                    value.length < 6) {
-                                  return 'Password must be at least 6 characters long';
-                                }
-                                return null;
-                              },
-                            ),
-                            SizedBox(height: 16),
-                            _isRegistering
-                                ? CircularProgressIndicator()
-                                : ElevatedButton(
-                                    onPressed: register,
-                                    style: ElevatedButton.styleFrom(
-                                      minimumSize: Size(200, 50),
-                                      backgroundColor: Colors.green,
-                                      foregroundColor: Colors.white,
-                                      textStyle: TextStyle(
-                                        fontSize: 16,
-                                        fontFamily: "Poppins",
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    child: Text("Create Account"),
-                                  ),
-                            const SizedBox(height: 0),
-
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "Already have an account?",
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      CupertinoPageRoute(
-                                        builder: (context) => UserLogin(),
-                                      ),
-                                    );
-                                  },
-                                  child: Text(
-                                    "Login here",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 40),
-
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "Or sign up with",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.blueGrey,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-
-                                //google sign in button
-                                SignInButton(
-                                  onPressed: () =>
-                                      AuthServices().signInWithGoogle(),
-                                  Buttons.google,
-                                  text: "Sign up with Google",
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(0),
-                                  ),
-                                  // textStyle: TextStyle(
-                                  //   fontSize: 16,
-                                  //   fontFamily: "Poppins",
-                                  // ),
-                                  clipBehavior: Clip.hardEdge,
-                                ),
-                                const SizedBox(height: 0),
-
-                                //apple sign in button
-                                SignInButton(
-                                  onPressed: () {},
-                                  Buttons.apple,
-                                  text: "Sign up with Apple",
-                                ),
-                              ],
+                              label: "PASSWORD",
+                              icon: Icons.lock_outline_rounded,
+                              hint: "••••••••",
+                              isPassword: true,
                             ),
                           ],
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 25),
+                      if (_isRegistering)
+                        CircularProgressIndicator(
+                          color: SavannahColors.greenDeep,
+                        )
+                      else
+                        ElevatedButton(
+                          onPressed: register,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: SavannahColors.greenDeep,
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size(double.infinity, 60),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18),
+                            ),
+                            elevation: 2,
+                          ),
+                          child: const Text(
+                            "CREATE ACCOUNT",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 2,
+                            ),
+                          ),
+                        ),
+                      const SizedBox(height: 15),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text.rich(
+                          TextSpan(
+                            text: "Already a ranger? ",
+                            style: TextStyle(color: SavannahColors.textGrey),
+                            children: [
+                              TextSpan(
+                                text: "Login here",
+                                style: TextStyle(
+                                  color: SavannahColors.orangeCaramel,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      Text(
+                        "OR SIGN UP WITH",
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: SavannahColors.textGrey,
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _socialButton(
+                            Buttons.google,
+                            () => authServices.value.signInWithGoogle(),
+                          ),
+                          const SizedBox(width: 25),
+                          _socialButton(Buttons.apple, () {}),
+                        ],
+                      ),
+                      const SizedBox(height: 40),
+                    ],
+                  ),
                 ),
               ),
-            ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    required String hint,
+    bool isPassword = false,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.bold,
+            color: SavannahColors.orangeCaramel,
+            letterSpacing: 1.2,
           ),
         ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: controller,
+          obscureText: isPassword,
+          style: const TextStyle(color: SavannahColors.textBlack, fontSize: 15),
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: TextStyle(
+              color: SavannahColors.textGrey.withOpacity(0.5),
+            ),
+            prefixIcon: Icon(icon, color: SavannahColors.greenOlive, size: 20),
+            filled: true,
+            fillColor: SavannahColors.beigeLight.withOpacity(0.3),
+            contentPadding: const EdgeInsets.symmetric(vertical: 18),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+              borderSide: BorderSide(color: SavannahColors.beigeDark),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+              borderSide: BorderSide(
+                color: SavannahColors.orangeSand,
+                width: 2,
+              ),
+            ),
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) return 'Field cannot be empty';
+            if (!isPassword && !value.contains("@"))
+              return 'Enter a valid email';
+            if (isPassword && value.length < 6) return 'Password too short';
+            return null;
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _socialButton(Buttons button, VoidCallback onTap) {
+    bool isGoogle = button == Buttons.google;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: SavannahColors.white,
+          shape: BoxShape.circle,
+          border: Border.all(color: SavannahColors.beigeDark),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 12,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: isGoogle
+            ? Image.network(
+                'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg',
+                height: 24,
+                width: 24,
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.g_mobiledata, color: Colors.red, size: 24),
+              )
+            : SignInButton(button, mini: true, onPressed: onTap),
       ),
     );
   }

@@ -29,7 +29,7 @@ class MapViewState extends State<MapView> {
   static const LatLng _initialCenter = LatLng(12.658833, 75.604339);
 
   // 2. The SINGLE source of truth for markers
-  Set<Marker> _markers = {
+  final Set<Marker> _markers = {
     Marker(
       markerId: const MarkerId('test_pin_1'),
       position: _initialCenter,
