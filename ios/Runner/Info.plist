@@ -52,6 +52,10 @@
     <string>Explanation on why the camera access is needed.</string>
     <key>NSMicrophoneUsageDescription</key>
     <string>Explanation on why the microphone access is needed.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>This app needs access to location when open to show your current position on the map.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>This app needs access to location when in the background to track wildlife sightings.</string>
     <key>UISupportedInterfaceOrientations</key>
     <array>
       <string>UIInterfaceOrientationPortrait</string>

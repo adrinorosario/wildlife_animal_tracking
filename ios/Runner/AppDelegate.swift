@@ -10,7 +10,9 @@ import GoogleMaps
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     // Add the google maps api key here below
-    GMSServices.provideAPIKey(FlutterConfigPlusPlugin.env(for: "GOOGLE_MAPS_API_KEY"))
+    if let apiKey = FlutterConfigPlusPlugin.env(for: "GOOGLE_MAPS_API_KEY") {
+      GMSServices.provideAPIKey(apiKey)
+    }
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }

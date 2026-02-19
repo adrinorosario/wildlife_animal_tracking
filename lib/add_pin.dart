@@ -1,7 +1,6 @@
 import "package:flutter/material.dart";
 import "package:wildlife_tracker/camera_capture.dart";
 import 'package:collection/collection.dart';
-import 'package:flutter_onnxruntime/flutter_onnxruntime.dart';
 
 enum PinType {
   injured(color: Colors.red, title: "Injured animal"),

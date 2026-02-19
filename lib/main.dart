@@ -4,9 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:wildlife_tracker/user_profile.dart';
 import 'package:wildlife_tracker/alert_notifications.dart';
 import 'package:wildlife_tracker/add_pin.dart';
+import 'package:wildlife_tracker/map_view.dart';
 import 'package:wildlife_tracker/auth_layout.dart';
 import 'package:wildlife_tracker/user_login.dart';
-import 'package:wildlife_tracker/map_view.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';

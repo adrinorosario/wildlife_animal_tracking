@@ -9,9 +9,9 @@ class WildlifeSighting {
   final String imagePath;
 
   WildlifeSighting({
-    required this.position, 
-    required this.title, 
-    required this.imagePath
+    required this.position,
+    required this.title,
+    required this.imagePath,
   });
 }
 
@@ -24,7 +24,7 @@ class MapView extends StatefulWidget {
 
 class _MapViewState extends State<MapView> {
   final Completer<GoogleMapController> _controller = Completer();
-  
+
   // Initial Position: Coorg/Western Ghats region
   static const LatLng _initialCenter = LatLng(12.658833, 75.604339);
 
@@ -56,8 +56,8 @@ class _MapViewState extends State<MapView> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              sighting.title, 
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)
+              sighting.title,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
             ClipRRect(
@@ -70,7 +70,9 @@ class _MapViewState extends State<MapView> {
               ),
             ),
             const SizedBox(height: 10),
-            Text("Location: ${sighting.position.latitude}, ${sighting.position.longitude}"),
+            Text(
+              "Location: ${sighting.position.latitude}, ${sighting.position.longitude}",
+            ),
           ],
         ),
       ),
@@ -80,7 +82,7 @@ class _MapViewState extends State<MapView> {
   // 4. Logic to add a new pin to the UI
   void _addSightingToMap(WildlifeSighting sighting) {
     final markerId = MarkerId(DateTime.now().millisecondsSinceEpoch.toString());
-    
+
     setState(() {
       _markers.add(
         Marker(
@@ -90,7 +92,9 @@ class _MapViewState extends State<MapView> {
             title: sighting.title,
             snippet: 'Tap to view photo',
           ),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+            BitmapDescriptor.hueAzure,
+          ),
           onTap: () {
             _showPhotoPreview(sighting);
           },
@@ -118,7 +122,7 @@ class _MapViewState extends State<MapView> {
             _controller.complete(controller);
           },
         ),
-        
+
         // The Simulation Button Layer
         Positioned(
           bottom: 120, // Positioned above the bottom nav bar
@@ -128,21 +132,20 @@ class _MapViewState extends State<MapView> {
             child: const Icon(Icons.camera_enhance, color: Colors.white),
             onPressed: () {
               // Simulating the "Take Photo" result
-              _addSightingToMap(WildlifeSighting(
-                position: const LatLng(12.6595, 75.6055), // Slightly offset from center
-                title: "New Tiger Sighting",
-                imagePath: "temp_path",
-              ));
+              _addSightingToMap(
+                WildlifeSighting(
+                  position: const LatLng(
+                    12.6595,
+                    75.6055,
+                  ), // Slightly offset from center
+                  title: "New Tiger Sighting",
+                  imagePath: "temp_path",
+                ),
+              );
             },
           ),
         ),
       ],
     );
-  }
-
-  // Camera Helper
-  Future<void> _zoomToUser() async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newLatLngZoom(_initialCenter, 17));
   }
 }
