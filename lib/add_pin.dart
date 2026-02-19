@@ -1,31 +1,20 @@
+import "dart:io";
 import "package:flutter/material.dart";
 import "package:wildlife_tracker/camera_capture.dart";
-import 'package:collection/collection.dart';
-
 import 'package:geolocator/geolocator.dart';
+import 'package:wildlife_tracker/theme_colors.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum PinType {
-  injured(color: Colors.red, title: "Injured animal"),
-  sighting(color: Colors.blue, title: "Animal sighting"),
-  displaced(color: Colors.orange, title: "Displaced animal"),
-  lostInUrban(color: Colors.yellow, title: "Lost in urban area");
+  injured(color: SavannahColors.orangeCaramel, title: "Injured animal"),
+  sighting(color: SavannahColors.greenOlive, title: "Animal sighting"),
+  displaced(color: SavannahColors.orangeSand, title: "Displaced animal"),
+  lostInUrban(color: Color(0xFF8B7355), title: "Lost in urban area");
 
   const PinType({required this.color, required this.title});
-
   final Color color;
   final String title;
-}
-
-class PinForm {
-  const PinForm({
-    required this.pinType,
-    required this.latitude,
-    required this.longitude,
-  });
-
-  final PinType pinType;
-  final double latitude;
-  final double longitude;
 }
 
 class AddPin extends StatefulWidget {
@@ -35,18 +24,24 @@ class AddPin extends StatefulWidget {
   State<AddPin> createState() => _AddPinState();
 }
 
-typedef PinTypeEntry = DropdownMenuEntry<PinType>;
-
 class _AddPinState extends State<AddPin> {
-  // String? pinType;
   bool isSirenActive = false;
+  PinType selectedType = PinType.values.first;
+  String? identifiedSpecies;
+  File? _capturedImage;
+  bool _isSubmitting = false;
 
-  static final pinTypeEntries = UnmodifiableListView<PinTypeEntry>(
-    PinType.values.map(
-      (pinType) => PinTypeEntry(value: pinType, label: pinType.title),
-    ),
-  );
-  String dropDownValue = PinType.values.first.title;
+  static final pinTypeEntries = PinType.values
+      .map(
+        (pinType) => DropdownMenuEntry<PinType>(
+          value: pinType,
+          label: pinType.title,
+          style: MenuItemButton.styleFrom(
+            foregroundColor: SavannahColors.textBlack,
+          ),
+        ),
+      )
+      .toList();
 
   Future<Position> _getCurrentLocation() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -66,186 +61,269 @@ class _AddPinState extends State<AddPin> {
     return await Geolocator.getCurrentPosition();
   }
 
-  String? identifiedSpecies;
+  /// Uploads the image to Firebase Cloud Storage and returns the download URL.
+  Future<String> _uploadImage(File imageFile) async {
+    final fileName = 'sightings/${DateTime.now().millisecondsSinceEpoch}.jpg';
+    final storageRef = FirebaseStorage.instance.ref().child(fileName);
+
+    final uploadTask = await storageRef.putFile(imageFile);
+    final downloadUrl = await uploadTask.ref.getDownloadURL();
+    return downloadUrl;
+  }
+
+  /// Saves the sighting record to Firestore.
+  Future<void> _saveSightingToFirestore({
+    required String imageUrl,
+    required String pinType,
+    required double latitude,
+    required double longitude,
+    required bool sirenActive,
+    String? species,
+  }) async {
+    await FirebaseFirestore.instance.collection('animal_sightings').add({
+      'imageUrl': imageUrl,
+      'pinType': pinType,
+      'species': species ?? 'Unknown',
+      'latitude': latitude,
+      'longitude': longitude,
+      'sirenActive': sirenActive,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+  }
+
+  /// Handles the full submission: upload image, save to Firestore, and pop.
+  Future<void> _submitSighting() async {
+    if (_capturedImage == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please capture an image first")),
+      );
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
+
+    try {
+      // 1. Get current location
+      final position = await _getCurrentLocation();
+
+      // 2. Upload image to Cloud Storage
+      final imageUrl = await _uploadImage(_capturedImage!);
+
+      // 3. Build the title
+      String title = selectedType.title;
+      if (identifiedSpecies != null && identifiedSpecies!.isNotEmpty) {
+        title += " ($identifiedSpecies)";
+      }
+
+      // 4. Save to Firestore
+      await _saveSightingToFirestore(
+        imageUrl: imageUrl,
+        pinType: selectedType.title,
+        latitude: position.latitude,
+        longitude: position.longitude,
+        sirenActive: isSirenActive,
+        species: identifiedSpecies,
+      );
+
+      debugPrint("Sighting saved to Firestore successfully");
+
+      // 5. Pop with result for map marker
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Sighting saved successfully!"),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.pop(context, {
+          "pinType": title,
+          "latitude": position.latitude,
+          "longitude": position.longitude,
+          "species": identifiedSpecies,
+        });
+      }
+    } catch (e) {
+      debugPrint("Error submitting sighting: $e");
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Error: ${e.toString()}"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Add Pin")),
-      body: Padding(
-        padding: const EdgeInsets.all(30.0),
-        child: SingleChildScrollView(
-          child: Column(
-            // mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Form(
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: 250,
-                      child: CameraCapture(
-                        onSpeciesIdentified: (species) {
-                          setState(() {
-                            identifiedSpecies = species;
-                          });
-                          debugPrint("Species identified: $species");
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 30),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              const Text(
-                                "Status:",
-                                style: TextStyle(fontSize: 16),
-                              ),
-                              const SizedBox(width: 16),
-                              DropdownMenu<PinType>(
-                                initialSelection: PinType.values.first,
-                                onSelected: (PinType? value) {
-                                  setState(() {
-                                    dropDownValue = value!.title;
-                                  });
-                                },
-                                dropdownMenuEntries: pinTypeEntries,
-                              ),
-                            ],
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(30.0),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Form(
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 250,
+                          child: CameraCapture(
+                            onSpeciesIdentified: (species) {
+                              setState(() {
+                                identifiedSpecies = species;
+                              });
+                              debugPrint("Species identified: $species");
+                            },
+                            onImageCaptured: (File file) {
+                              setState(() {
+                                _capturedImage = file;
+                              });
+                              debugPrint("Image captured: ${file.path}");
+                            },
                           ),
-                          const SizedBox(height: 40),
-                          Row(
+                        ),
+                        const SizedBox(height: 30),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              const Text(
-                                "Siren:",
-                                style: TextStyle(fontSize: 16),
-                              ),
-                              const SizedBox(width: 16),
-                              // ToggleSwitch(
-                              //   minWidth: 90.0,
-                              //   cornerRadius: 20.0,
-                              //   activeBgColors: [
-                              //     [Colors.green[800]!],
-                              //     [Colors.red[800]!],
-                              //   ],
-                              //   activeFgColor: Colors.white,
-                              //   inactiveBgColor: Colors.grey,
-                              //   inactiveFgColor: Colors.white,
-                              //   initialLabelIndex: 1,
-                              //   totalSwitches: 2,
-                              //   labels: ['Active', 'Inactive'],
-                              //   radiusStyle: true,
-                              //   onToggle: (index) {
-                              //     setState(() {
-                              //       isSirenActive = !isSirenActive;
-                              //     });
-                              //   },
-                              // ),
-                              SegmentedButton<bool>(
-                                style: SegmentedButton.styleFrom(
-                                  backgroundColor: Colors.grey[200],
-                                  foregroundColor: Colors.black,
-                                  selectedBackgroundColor: isSirenActive
-                                      ? Colors.green
-                                      : Colors.red,
-                                  selectedForegroundColor: Colors.white,
-                                ),
-                                segments: [
-                                  ButtonSegment(
-                                    value: true,
-                                    label: Text("Active"),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    "Status:",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                  ButtonSegment(
-                                    value: false,
-                                    label: Text("Inactive"),
+                                  const SizedBox(height: 8),
+                                  LayoutBuilder(
+                                    builder: (context, constraints) {
+                                      return DropdownMenu<PinType>(
+                                        width: constraints.maxWidth,
+                                        initialSelection: PinType.values.first,
+                                        onSelected: (PinType? value) {
+                                          if (value != null) {
+                                            setState(() {
+                                              selectedType = value;
+                                            });
+                                          }
+                                        },
+                                        dropdownMenuEntries: pinTypeEntries,
+                                      );
+                                    },
+                                  ),
+                                  const SizedBox(height: 24),
+                                  const Text(
+                                    "Siren:",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: SegmentedButton<bool>(
+                                      style: SegmentedButton.styleFrom(
+                                        backgroundColor: Colors.grey[200],
+                                        foregroundColor: Colors.black,
+                                        selectedBackgroundColor: isSirenActive
+                                            ? Colors.green
+                                            : Colors.red,
+                                        selectedForegroundColor: Colors.white,
+                                      ),
+                                      segments: const [
+                                        ButtonSegment(
+                                          value: true,
+                                          label: Text("Active"),
+                                        ),
+                                        ButtonSegment(
+                                          value: false,
+                                          label: Text("Inactive"),
+                                        ),
+                                      ],
+                                      selected: <bool>{isSirenActive},
+                                      onSelectionChanged:
+                                          (Set<bool> newSelection) {
+                                            setState(() {
+                                              isSirenActive =
+                                                  newSelection.first;
+                                            });
+                                          },
+                                    ),
                                   ),
                                 ],
-                                selected: <bool>{isSirenActive},
-                                onSelectionChanged: (Set<bool> newSelection) {
-                                  setState(() {
-                                    isSirenActive = newSelection.first;
-                                  });
-                                },
                               ),
                             ],
                           ),
-                        ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: ElevatedButton(
+                      onPressed: _isSubmitting ? null : _submitSighting,
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(200, 50),
+                        textStyle: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.green,
+                      ),
+                      child: _isSubmitting
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2.5,
+                              ),
+                            )
+                          : const Text("Submit Pin"),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // Full-screen loading overlay during submission
+          if (_isSubmitting)
+            Container(
+              color: Colors.black.withOpacity(0.3),
+              child: const Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(color: Colors.white),
+                    SizedBox(height: 16),
+                    Text(
+                      "Uploading sighting...",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: ElevatedButton(
-                  // onPressed: () {
-                  //   ScaffoldMessenger.of(context).showSnackBar(
-                  //     SnackBar(
-                  //       content: const Text(
-                  //         "Pin submitted",
-                  //         style: TextStyle(
-                  //           fontSize: 14,
-                  //           fontWeight: FontWeight.bold,
-                  //         ),
-                  //       ),
-                  //       duration: const Duration(seconds: 2),
-                  //       width: 300,
-                  //       padding: const EdgeInsets.symmetric(horizontal: 10),
-                  //       behavior: SnackBarBehavior.floating,
-                  //       shape: RoundedRectangleBorder(
-                  //         borderRadius: BorderRadius.circular(10),
-                  //       ),
-                  //       backgroundColor: Colors.green[500],
-                  //       action: SnackBarAction(
-                  //         label: "Dismiss",
-                  //         textColor: Colors.white,
-                  //         onPressed: () {},
-                  //       ),
-                  //     ),
-                  //   );
-                  // },  replacing this with real coordinates
-                  onPressed: () async {
-                    try {
-                      Position position = await _getCurrentLocation();
-
-                      print("Submitting pin...");
-                      print("Lat: ${position.latitude}");
-                      print("Lng: ${position.longitude}");
-
-                      Navigator.pop(context, {
-                        "pinType": dropDownValue,
-                        "latitude": position.latitude,
-                        "longitude": position.longitude,
-                        "species": identifiedSpecies,
-                      });
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Location error")),
-                      );
-                    }
-                  },
-
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(200, 50),
-                    textStyle: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.green,
-                  ),
-                  child: const Text("Submit Pin"),
-                ),
-              ),
-            ],
-          ),
-        ),
+            ),
+        ],
       ),
     );
   }

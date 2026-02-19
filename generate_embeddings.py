@@ -21,12 +21,16 @@ def generate_embeddings():
     tokenizer = open_clip.get_tokenizer(model_name)
     model.eval()
 
-    print("Generating prompts...")
-    # Assuming the species_labels.json contains just names. 
-    # BioCLIP works best with a prompt like "a photo of {name}".
-    # The user's script used "a photo of {name}, a type of {supercategory}".
-    # Since we only have names in species_labels.json, we will use "a photo of {name}".
-    prompts = [f"a photo of {name}" for name in species_names]
+    prompts = []
+    for name in species_names:
+        if name == "Human":
+            # Add multiple prompts for Human to catch different phrases
+            # We will average the embeddings later or just rely on the best match mechanism if we expanded the labels list.
+            # But here `species_names` and `prompts` must alignment 1:1 for the current app logic (index based).
+            # So we will try to make the SINGLE prompt as robust as possible.
+            prompts.append("a photo of a human person man woman child Homo sapiens")
+        else:
+            prompts.append(f"a photo of {name}")
 
     print("Encoding text...")
     batch_size = 100

@@ -5,14 +5,15 @@ import 'package:wildlife_tracker/user_profile.dart';
 import 'package:wildlife_tracker/alert_notifications.dart';
 import 'package:wildlife_tracker/add_pin.dart';
 import 'package:wildlife_tracker/map_view.dart';
-import 'package:wildlife_tracker/auth_layout.dart';
-import 'package:wildlife_tracker/user_login.dart';
+// import 'package:wildlife_tracker/auth_layout.dart';
+// import 'package:wildlife_tracker/user_login.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-
 import 'package:flutter_config_plus/flutter_config_plus.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+import 'package:wildlife_tracker/theme_colors.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,24 +30,22 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Wildlife Tracker',
+      title: 'Animap',
       theme: ThemeData(
+        useMaterial3: true,
+        scaffoldBackgroundColor: SavannahColors.beigeLight,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
-          brightness: Brightness.light,
+          seedColor: SavannahColors.greenOlive,
+          primary: SavannahColors.greenOlive,
         ),
       ),
-      home: AuthLayout(
-        pageIfNotConnected: const UserLogin(),
-        child: const MyHomePage(title: "Wildlife Tracker"),
-      ),
+      home: const MyHomePage(title: "Animap"),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
   final String title;
 
   @override
@@ -55,13 +54,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
-
-  final GlobalKey<MapViewState> mapViewKey = GlobalKey<MapViewState>();
+  final GlobalKey mapViewKey = GlobalKey();
 
   void _setNavigationIndex(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
+    setState(() => _currentIndex = index);
   }
 
   @override
@@ -69,78 +65,109 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: SavannahColors.white.withOpacity(0.7),
+        surfaceTintColor: Colors.transparent,
         title: Text(
-          widget.title,
+          widget.title.toUpperCase(),
           style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            fontSize: 24.0,
+            letterSpacing: 2.5,
+            fontWeight: FontWeight.w900,
+            color: SavannahColors.textBlack,
+            fontSize: 14.0,
           ),
         ),
-        forceMaterialTransparency: true,
+        centerTitle: true,
         elevation: 0,
-        automaticallyImplyLeading: false,
+        shape: const Border(
+          bottom: BorderSide(color: SavannahColors.beigeDark, width: 0.5),
+        ),
       ),
+
+      // Positions the FAB at the bottom right
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+
       floatingActionButton: _currentIndex != 0
           ? null
-          : FloatingActionButton(
-              foregroundColor: Colors.white,
-              backgroundColor: Colors.green,
-
-              // onPressed: () {
-              //   // Your teammate's AddPin sheet
-              //   showCupertinoModalPopup(
-              //     context: context,
-              //     builder: (context) => const AddPin(),
-              //   );
-              // }, replacing with real pins added
-              onPressed: () async {
-                final result = await showCupertinoModalPopup(
-                  context: context,
-                  builder: (context) => const AddPin(),
-                );
-
-                if (result != null) {
-                  mapViewKey.currentState?.addExternalMarker(
-                    result["latitude"],
-                    result["longitude"],
-                    result["pinType"],
+          : Padding(
+              // Padding pushes the button up to clear the Google Maps zoom UI
+              padding: const EdgeInsets.only(bottom: 90.0),
+              child: FloatingActionButton(
+                elevation: 4,
+                backgroundColor: SavannahColors.greenDeep,
+                foregroundColor: SavannahColors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                onPressed: () async {
+                  final result = await showCupertinoModalPopup(
+                    context: context,
+                    builder: (context) => AddPin(),
                   );
-                }
-              },
 
-              child: const Icon(Icons.add),
+                  if (result != null) {
+                    final dynamic state = mapViewKey.currentState;
+                    if (state != null) {
+                      state.addExternalMarker(
+                        result["latitude"],
+                        result["longitude"],
+                        result["pinType"],
+                      );
+                    }
+                  }
+                },
+                child: const Icon(Icons.add_location_alt_rounded, size: 28),
+              ),
             ),
+
       body: IndexedStack(
         index: _currentIndex,
         children: [
-          MapView(key: mapViewKey), // Your isolated map file
+          MapView(key: mapViewKey),
           AlertNotifications(),
           UserProfile(),
         ],
       ),
-      bottomNavigationBar: NavigationBar(
-        onDestinationSelected: _setNavigationIndex,
-        selectedIndex: _currentIndex,
-        indicatorColor: Colors.blue,
-        destinations: const [
-          NavigationDestination(
-            selectedIcon: Icon(Icons.map),
-            icon: Icon(Icons.map_outlined),
-            label: "Map",
+
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          border: Border(
+            top: BorderSide(color: SavannahColors.beigeDark, width: 1),
           ),
-          NavigationDestination(
-            selectedIcon: Icon(Icons.notification_important_rounded),
-            icon: Icon(Icons.notification_important_outlined),
-            label: "Alerts",
-          ),
-          NavigationDestination(
-            selectedIcon: Icon(Icons.person_rounded),
-            icon: Icon(Icons.person_outlined),
-            label: "Profile",
-          ),
-        ],
+        ),
+        child: NavigationBar(
+          height: 70,
+          elevation: 0,
+          backgroundColor: SavannahColors.white,
+          indicatorColor: SavannahColors.orangeSand.withOpacity(0.3),
+          selectedIndex: _currentIndex,
+          onDestinationSelected: _setNavigationIndex,
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.map_outlined),
+              selectedIcon: Icon(
+                Icons.map_rounded,
+                color: SavannahColors.greenDeep,
+              ),
+              label: "Map",
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.notifications_none_rounded),
+              selectedIcon: Icon(
+                Icons.notifications_rounded,
+                color: SavannahColors.orangeCaramel,
+              ),
+              label: "Alerts",
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.person_outline_rounded),
+              selectedIcon: Icon(
+                Icons.person_rounded,
+                color: SavannahColors.greenDeep,
+              ),
+              label: "Profile",
+            ),
+          ],
+        ),
       ),
     );
   }

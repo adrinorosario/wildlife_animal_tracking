@@ -10,8 +10,13 @@ import 'dart:math' as math;
 
 class CameraCapture extends StatefulWidget {
   final void Function(String)? onSpeciesIdentified;
+  final void Function(File)? onImageCaptured;
 
-  const CameraCapture({super.key, this.onSpeciesIdentified});
+  const CameraCapture({
+    super.key,
+    this.onSpeciesIdentified,
+    this.onImageCaptured,
+  });
 
   @override
   State<CameraCapture> createState() => _CameraCaptureState();
@@ -70,6 +75,7 @@ class _CameraCaptureState extends State<CameraCapture> {
         );
       }
 
+      if (!mounted) return;
       setState(() {
         _labels = labelsList;
         _speciesEmbeddings = embeddingsList;
@@ -77,6 +83,7 @@ class _CameraCaptureState extends State<CameraCapture> {
       debugPrint("Loaded ${_labels?.length} labels and embeddings.");
     } catch (e) {
       debugPrint("Error loading labels/embeddings: $e");
+      if (!mounted) return;
       setState(() {
         _labels = [];
         _speciesEmbeddings = [];
@@ -86,18 +93,27 @@ class _CameraCaptureState extends State<CameraCapture> {
 
   Future<void> pickImage(ImageSource source) async {
     try {
-      final pickedImage = await picker.pickImage(source: source);
+      final pickedImage = await picker.pickImage(
+        source: source,
+        maxWidth: 800,
+        maxHeight: 800,
+        imageQuality: 70,
+      );
 
       if (pickedImage != null) {
+        if (!mounted) return;
+        final imageFile = File(pickedImage.path);
         setState(() {
-          image = File(pickedImage.path);
+          image = imageFile;
           _result = null;
           _isAnalyzing = true;
         });
+        widget.onImageCaptured?.call(imageFile);
         _runInference();
       }
     } catch (e) {
       debugPrint("Error picking image: $e");
+      if (!mounted) return;
       setState(() {
         _isAnalyzing = false;
       });
@@ -108,6 +124,7 @@ class _CameraCaptureState extends State<CameraCapture> {
     if (image == null) return;
     if (_session == null) {
       debugPrint("Model not loaded");
+      if (!mounted) return;
       setState(() {
         _isAnalyzing = false;
         _result = "Model not loaded";
@@ -119,11 +136,13 @@ class _CameraCaptureState extends State<CameraCapture> {
       await Future.delayed(
         const Duration(milliseconds: 100),
       ); // UI update yield
+      if (!mounted) return;
 
       // 1. Preprocess Image
       final imageBytes = await image!.readAsBytes();
-      final imageDecoded = img.decodeImage(imageBytes);
+      var imageDecoded = img.decodeImage(imageBytes);
       if (imageDecoded == null) {
+        if (!mounted) return;
         setState(() {
           _result = 'Failed to decode image';
           _isAnalyzing = false;
@@ -131,26 +150,59 @@ class _CameraCaptureState extends State<CameraCapture> {
         return;
       }
 
-      final imageResized = img.copyResize(
-        imageDecoded,
+      // Fix orientation (e.g. from camera EXIF)
+      imageDecoded = img.bakeOrientation(imageDecoded);
+
+      // CLIP preprocessing: resize shortest side to 224, then center crop
+      final int origW = imageDecoded.width;
+      final int origH = imageDecoded.height;
+      debugPrint("Original image: ${origW}x${origH}");
+
+      img.Image resizedForCrop;
+      if (origW < origH) {
+        // Width is shorter, resize width to 224
+        resizedForCrop = img.copyResize(
+          imageDecoded,
+          width: 224,
+          interpolation: img.Interpolation.cubic,
+        );
+      } else {
+        // Height is shorter, resize height to 224
+        resizedForCrop = img.copyResize(
+          imageDecoded,
+          height: 224,
+          interpolation: img.Interpolation.cubic,
+        );
+      }
+
+      debugPrint(
+        "After resize: ${resizedForCrop.width}x${resizedForCrop.height}",
+      );
+
+      // Center crop to 224x224
+      final int cropX = (resizedForCrop.width - 224) ~/ 2;
+      final int cropY = (resizedForCrop.height - 224) ~/ 2;
+      final imageResized = img.copyCrop(
+        resizedForCrop,
+        x: cropX,
+        y: cropY,
         width: 224,
         height: 224,
       );
 
+      debugPrint(
+        "After center crop: ${imageResized.width}x${imageResized.height}",
+      );
+
       // 2. Prepare Input Tensor
-      // Flatten image data to Float32List (1 * 3 * 224 * 224) - NCHW format
-      // Normalize pixel values (0-1)
       final inputData = Float32List(1 * 3 * 224 * 224);
       final int imageSize = 224 * 224;
-
       final mean = [0.48145466, 0.4578275, 0.40821073];
       final std = [0.26862954, 0.26130258, 0.27577711];
 
       for (var y = 0; y < 224; y++) {
         for (var x = 0; x < 224; x++) {
           final pixel = imageResized.getPixel(x, y);
-
-          // Normalize: (value - mean) / std
           inputData[y * 224 + x] = ((pixel.r / 255.0) - mean[0]) / std[0]; // R
           inputData[imageSize + (y * 224 + x)] =
               ((pixel.g / 255.0) - mean[1]) / std[1]; // G
@@ -159,25 +211,68 @@ class _CameraCaptureState extends State<CameraCapture> {
         }
       }
 
-      final inputOrt = await OrtValue.fromList(inputData, [1, 3, 224, 224]);
-      final runOptions = OrtRunOptions(logSeverityLevel: 3);
+      // Debug: verify pixel values and tensor range
+      final centerPixel = imageResized.getPixel(112, 112);
+      debugPrint(
+        "Center pixel RGB: r=${centerPixel.r}, g=${centerPixel.g}, b=${centerPixel.b}",
+      );
 
-      // 3. Run Inference
-      final outputs = await _session!.run({
-        _session!.inputNames[0]: inputOrt,
-      }, options: runOptions);
+      // Check tensor statistics
+      double tMin = double.infinity, tMax = -double.infinity, tSum = 0;
+      for (int i = 0; i < inputData.length; i++) {
+        if (inputData[i] < tMin) tMin = inputData[i];
+        if (inputData[i] > tMax) tMax = inputData[i];
+        tSum += inputData[i];
+      }
+      debugPrint(
+        "Input tensor: min=${tMin.toStringAsFixed(3)}, max=${tMax.toStringAsFixed(3)}, mean=${(tSum / inputData.length).toStringAsFixed(3)}",
+      );
 
-      // 4. Postprocess Output
-      if (outputs.isNotEmpty) {
+      OrtValue? inputOrt;
+      OrtRunOptions? runOptions;
+
+      try {
+        final startTime = DateTime.now();
+        inputOrt = await OrtValue.fromList(inputData, [1, 3, 224, 224]);
+        runOptions = OrtRunOptions(logSeverityLevel: 3);
+
+        // 3. Run Inference
+        final outputs = await _session!.run({
+          _session!.inputNames[0]: inputOrt,
+        }, options: runOptions);
+
+        final inferDuration = DateTime.now()
+            .difference(startTime)
+            .inMilliseconds;
+        debugPrint("Inference took: ${inferDuration}ms");
+
+        // 4. Postprocess Output
+        if (outputs.isEmpty) {
+          if (!mounted) return;
+          setState(() {
+            _result = 'No output from model';
+            _isAnalyzing = false;
+          });
+          return;
+        }
+
+        // Retrieve and copy data, then dispose immediately
         final outputValue = outputs.values.first;
-        final rawEmbeddingList = await outputValue.asList();
-        // Assuming output shape [1, 512] or similar
-        final rawEmbedding = (rawEmbeddingList[0] as List<dynamic>)
-            .cast<double>();
+        List<double> rawEmbedding;
+        try {
+          final rawList = await outputValue.asList();
+          rawEmbedding = (rawList[0] as List<dynamic>).cast<double>();
+        } finally {
+          // Dispose ALL output values
+          for (final val in outputs.values) {
+            val.dispose();
+          }
+        }
+
         debugPrint("Embedding Length: ${rawEmbedding.length}");
-        outputValue.dispose();
 
         if (_speciesEmbeddings == null || _speciesEmbeddings!.isEmpty) {
+          if (!mounted) return;
           setState(() {
             _result = 'No species embeddings loaded';
             _isAnalyzing = false;
@@ -191,6 +286,12 @@ class _CameraCaptureState extends State<CameraCapture> {
         double magnitude = 0.0;
         if (sumSq > 0) magnitude = math.sqrt(sumSq);
 
+        // Log magnitude to check for "pathetic" zero vectors
+        debugPrint("Image embedding magnitude: $magnitude");
+        if (magnitude < 0.0001) {
+          debugPrint("WARNING: Zero vector returned from model!");
+        }
+
         List<double> imageEmbedding = [];
         if (magnitude > 0) {
           imageEmbedding = rawEmbedding.map((e) => e / magnitude).toList();
@@ -198,49 +299,62 @@ class _CameraCaptureState extends State<CameraCapture> {
           imageEmbedding = rawEmbedding;
         }
 
-        // Compute dot product with all species text embeddings
-        // Text embeddings are already normalized from Python script
         var maxScore = -double.infinity;
         var maxIndex = -1;
 
+        // Compute scores for top-k logging
+        // Optimization: Use a fixed-size priority queue or just list
+        List<MapEntry<int, double>> allScores = [];
+
         for (var i = 0; i < _speciesEmbeddings!.length; i++) {
           final textEmbedding = _speciesEmbeddings![i];
-          // Size check, but skipping for perf
           double dotProduct = 0.0;
+          // Unroll loop slightly or just standard loop
           for (var j = 0; j < imageEmbedding.length; j++) {
             dotProduct += imageEmbedding[j] * textEmbedding[j];
           }
-
-          // Scale by 100 as per user script
           double score = dotProduct * 100.0;
 
           if (score > maxScore) {
             maxScore = score;
             maxIndex = i;
           }
+          allScores.add(MapEntry(i, score));
+        }
+
+        // Sort to find top 5 for debugging
+        allScores.sort((a, b) => b.value.compareTo(a.value));
+        debugPrint("--- TOP 5 PREDICTIONS ---");
+        for (var k = 0; k < 5 && k < allScores.length; k++) {
+          final idx = allScores[k].key;
+          final name = _labels != null && idx < _labels!.length
+              ? _labels![idx]
+              : "Index $idx";
+          debugPrint("$name: ${allScores[k].value.toStringAsFixed(2)}%");
         }
 
         if (maxIndex != -1 && _labels != null && maxIndex < _labels!.length) {
           final speciesName = _labels![maxIndex];
+          if (!mounted) return;
           setState(() {
             _result = "$speciesName (${maxScore.toStringAsFixed(1)}%)";
             _isAnalyzing = false;
           });
           widget.onSpeciesIdentified?.call(speciesName);
         } else {
+          if (!mounted) return;
           setState(() {
             _result = 'Unknown (Max: ${maxScore.toStringAsFixed(1)}%)';
             _isAnalyzing = false;
           });
         }
-      } else {
-        setState(() {
-          _result = 'No output from model';
-          _isAnalyzing = false;
-        });
+      } finally {
+        inputOrt?.dispose();
+        // runOptions?.dispose(); // Check if needed, but safer not to if unsure. OrtRunOptions in flutter_onnxruntime might not have dispose exposed or needed.
       }
     } catch (e) {
       debugPrint("Inference error: $e");
+      if (!mounted) return;
       setState(() {
         _result = 'Error analyzing image';
         _isAnalyzing = false;

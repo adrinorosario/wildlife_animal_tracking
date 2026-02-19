@@ -1,0 +1,52 @@
+Resolving dependencies...
+Downloading packages...
+  _fe_analyzer_shared 93.0.0 (95.0.0 available)
+  analyzer 10.0.1 (10.1.0 available)
+  camera_android_camerax 0.6.30 (0.7.0+1 available)
+  camera_avfoundation 0.9.23+2 (0.10.0+2 available)
+  google_maps_flutter_web 0.5.14+3 (0.6.1 available)
+  meta 1.17.0 (1.18.1 available)
+  mgrs_dart 2.0.0 (3.0.0 available)
+  proj4dart 2.1.0 (3.0.0 available)
+  unicode 0.3.1 (1.1.9 available)
+Got dependencies!
+9 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+Analyzing wildlife_tracker...                                   
+
+   info • Invalid use of a private type in a public API • lib/alert_notifications.dart:7:3 • library_private_types_in_public_api
+   info • Unnecessary instance of 'Container' • lib/alert_notifications.dart:13:12 • avoid_unnecessary_containers
+   info • Statements in a for should be enclosed in a block • lib/camera_capture.dart:190:40 • curly_braces_in_flow_control_structures
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/main.dart:68:47 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/main.dart:141:53 • deprecated_member_use
+   info • Don't invoke 'print' in production code • lib/map_view.dart:60:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/map_view.dart:61:5 • avoid_print
+   info • Invalid use of a private type in a public API • lib/new_user_register.dart:14:3 • library_private_types_in_public_api
+   info • Don't use 'BuildContext's across async gaps • lib/new_user_register.dart:47:28 • use_build_context_synchronously
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/new_user_register.dart:85:45 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/new_user_register.dart:86:45 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/new_user_register.dart:131:55 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/new_user_register.dart:259:46 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/new_user_register.dart:263:50 • deprecated_member_use
+   info • Statements in an if should be enclosed in a block • lib/new_user_register.dart:284:15 • curly_braces_in_flow_control_structures
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/new_user_register.dart:305:35 • deprecated_member_use
+   info • Invalid use of a private type in a public API • lib/splash_screen.dart:8:3 • library_private_types_in_public_api
+   info • Don't use 'BuildContext's across async gaps • lib/splash_screen.dart:52:20 • use_build_context_synchronously
+   info • Unnecessary use of multiple underscores • lib/splash_screen.dart:54:28 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • lib/splash_screen.dart:54:32 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • lib/splash_screen.dart:55:46 • unnecessary_underscores
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/splash_screen.dart:86:32 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/splash_screen.dart:87:32 • deprecated_member_use
+   info • Invalid use of a private type in a public API • lib/user_login.dart:15:3 • library_private_types_in_public_api
+   info • Don't use 'BuildContext's across async gaps • lib/user_login.dart:48:28 • use_build_context_synchronously
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/user_login.dart:89:45 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/user_login.dart:90:45 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/user_login.dart:139:55 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/user_login.dart:281:46 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/user_login.dart:285:50 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/user_login.dart:321:35 • deprecated_member_use
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/user_profile.dart:68:42 • use_build_context_synchronously
+warning • Unused import: 'package:flutter/material.dart' • test/widget_test.dart:1:8 • unused_import
+warning • Unused import: 'package:firebase_core_platform_interface/firebase_core_platform_interface.dart' • test/widget_test.dart:5:8 • unused_import
+   info • 'setMockMethodCallHandler' is deprecated and shouldn't be used. Use tester.binding.defaultBinaryMessenger.setMockMethodCallHandler or TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler instead. Pass the channel as the first argument. This feature was deprecated after v3.9.0-19.0.pre • test/widget_test.dart:13:11 • deprecated_member_use
+
