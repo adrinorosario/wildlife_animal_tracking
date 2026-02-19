@@ -1,0 +1,159 @@
+0,White-tailed Deer,Odocoileus virginianus
+1,Eastern Gray Squirrel,Sciurus carolinensis
+2,Mule Deer,Odocoileus hemionus
+3,Common Raccoon,Procyon lotor
+4,Eastern Cottontail,Sylvilagus floridanus
+5,Domestic Cat,Felis catus
+6,Eastern Fox Squirrel,Sciurus niger
+7,Coyote,Canis latrans
+8,Domestic Dog,Canis familiaris
+9,Red Fox,Vulpes vulpes
+10,Eastern Chipmunk,Tamias striatus
+11,American Red Squirrel,Tamiasciurus hudsonicus
+12,Eurasian Red Squirrel,Sciurus vulgaris
+13,American Black Bear,Ursus americanus
+14,Western Roe Deer,Capreolus capreolus
+15,American Beaver,Castor canadensis
+16,Virginia Opossum,Didelphis virginiana
+17,Harbor Seal,Phoca vitulina
+18,Wild Boar,Sus scrofa
+19,European Rabbit,Oryctolagus cuniculus
+20,Moose,Alces alces
+21,California Ground Squirrel,Otospermophilus beecheyi
+22,Groundhog,Marmota monax
+23,Wapiti,Cervus canadensis
+24,Muskrat,Ondatra zibethicus
+25,Bobcat,Lynx rufus
+26,Desert Cottontail,Sylvilagus audubonii
+27,Domestic Cattle,Bos taurus
+28,Common Hedgehog,Erinaceus europaeus
+29,Gray Fox,Urocyon cinereoargenteus
+30,Striped Skunk,Mephitis mephitis
+31,Brown Hare,Lepus europaeus
+32,Domestic Horse,Equus caballus
+33,Koala,Phascolarctos cinereus
+34,California Sea Lion,Zalophus californianus
+35,Coypu,Myocastor coypus
+36,Humpback Whale,Megaptera novaeangliae
+37,North American River Otter,Lontra canadensis
+38,Mexican Long-nosed Armadillo,Dasypus mexicanus
+39,Mallard,Anas platyrhynchos
+40,House Sparrow,Passer domesticus
+41,Canada Goose,Branta canadensis
+42,Great Blue Heron,Ardea herodias
+43,American Robin,Turdus migratorius
+44,Rock Pigeon,Columba livia
+45,Great Egret,Ardea alba
+46,Northern Cardinal,Cardinalis cardinalis
+47,Red-tailed Hawk,Buteo jamaicensis
+48,House Finch,Haemorhous mexicanus
+49,European Starling,Sturnus vulgaris
+50,Mourning Dove,Zenaida macroura
+51,Red-winged Blackbird,Agelaius phoeniceus
+52,Song Sparrow,Melospiza melodia
+53,Turkey Vulture,Cathartes aura
+54,Eurasian Blackbird,Turdus merula
+55,Dark-eyed Junco,Junco hyemalis
+56,Grey Heron,Ardea cinerea
+57,Great Tit,Parus major
+58,Yellow-rumped Warbler,Setophaga coronata
+59,Northern Mockingbird,Mimus polyglottos
+60,Bald Eagle,Haliaeetus leucocephalus
+61,Barn Swallow,Hirundo rustica
+62,American Crow,Corvus brachyrhynchos
+63,Downy Woodpecker,Dryobates pubescens
+64,Osprey,Pandion haliaetus
+65,Double-crested Cormorant,Nannopterum auritum
+66,Blue Jay,Cyanocitta cristata
+67,Common Chaffinch,Fringilla coelebs
+68,American Goldfinch,Spinus tristis
+69,Wild Turkey,Meleagris gallopavo
+70,White Wagtail,Motacilla alba
+71,European Robin,Erithacus rubecula
+72,Common Raven,Corvus corax
+73,Snowy Egret,Egretta thula
+74,Mute Swan,Cygnus olor
+75,Black-headed Gull,Chroicocephalus ridibundus
+76,Eurasian Magpie,Pica pica
+77,Ring-billed Gull,Larus delawarensis
+78,Eurasian Coot,Fulica atra
+79,Pond Slider,Trachemys scripta
+80,Common Garter Snake,Thamnophis sirtalis
+81,Western Fence Lizard,Sceloporus occidentalis
+82,Painted Turtle,Chrysemys picta
+83,Brown Anole,Anolis sagrei
+84,Green Anole,Anolis carolinensis
+85,Common Snapping Turtle,Chelydra serpentina
+86,Common Box Turtle,Terrapene carolina
+87,Common Wall Lizard,Podarcis muralis
+88,American Alligator,Alligator mississippiensis
+89,Common Watersnake,Nerodia sipedon
+90,Green Iguana,Iguana iguana
+91,Common Side-blotched Lizard,Uta stansburiana
+92,Gopher Snake,Pituophis catenifer
+93,DeKay's Brownsnake,Storeria dekayi
+94,North American Racer,Coluber constrictor
+95,Mediterranean House Gecko,Hemidactylus turcicus
+96,Common Five-lined Skink,Plestiodon fasciatus
+97,Black Spiny-tailed Iguana,Ctenosaura similis
+98,Asian House Gecko,Hemidactylus frenatus
+99,Ring-necked Snake,Diadophis punctatus
+100,Green Sea Turtle,Chelonia mydas
+101,Common Slowworm,Anguis fragilis
+102,Moorish Gecko,Tarentola mauritanica
+103,Southern Alligator Lizard,Elgaria multicarinata
+104,Oriental Garden Lizard,Calotes versicolor
+105,Texas Spiny Lizard,Sceloporus olivaceus
+106,Western Rattlesnake,Crotalus oreganus
+107,Sand Lizard,Lacerta agilis
+108,Viviparous Lizard,Zootoca vivipara
+109,Western Terrestrial Garter Snake,Thamnophis elegans
+110,grass snake,Natrix natrix
+111,Tropical House Gecko,Hemidactylus mabouia
+112,Gopher Tortoise,Gopherus polyphemus
+113,Western Diamond-backed Rattlesnake,Crotalus atrox
+114,Australian Water Dragon,Intellagama lesueurii
+115,Eastern Fence Lizard,Sceloporus undulatus
+116,Eastern Ratsnake,Pantherophis alleghaniensis
+117,Italian Wall Lizard,Podarcis siculus
+118,Western Ratsnake,Pantherophis obsoletus
+119,American Toad,Anaxyrus americanus
+120,Green Frog,Lithobates clamitans
+121,American Bullfrog,Lithobates catesbeianus
+122,Eastern Red-backed Salamander,Plethodon cinereus
+123,European Toad,Bufo bufo
+124,Pacific chorus frog,Pseudacris regilla
+125,European Common Frog,Rana temporaria
+126,Eastern Newt,Notophthalmus viridescens
+127,Northern Leopard Frog,Lithobates pipiens
+128,Wood Frog,Lithobates sylvaticus
+129,Spring Peeper,Pseudacris crucifer
+130,Gray Treefrog,Dryophytes versicolor
+131,Green Treefrog,Dryophytes cinereus
+132,Fire Salamander,Salamandra salamandra
+133,California Newt,Taricha torosa
+134,Gulf Coast Toad,Incilius nebulifer
+135,Fowler's Toad,Anaxyrus fowleri
+136,Western Toad,Anaxyrus boreas
+137,Spotted Salamander,Ambystoma maculatum
+138,Asian Common Toad,Duttaphrynus melanostictus
+139,Pickerel Frog,Lithobates palustris
+140,Blanchard's Cricket Frog,Acris blanchardi
+141,Southern Leopard Frog,Lithobates sphenocephalus
+142,Southern Toad,Anaxyrus terrestris
+143,Cope's Gray Tree Frog,Dryophytes chrysoscelis
+144,Cuban Tree Frog,Osteopilus septentrionalis
+145,Cane Toad,Rhinella marina
+146,California Slender Salamander,Batrachoseps attenuatus
+147,Marsh Frog,Pelophylax ridibundus
+148,Ensatina,Ensatina eschscholtzii
+149,Rough-skinned Newt,Taricha granulosa
+150,Smooth Newt,Lissotriton vulgaris
+151,Giant Toad,Rhinella horribilis
+152,Squirrel Tree Frog,Dryophytes squirellus
+153,Green Toad,Bufotes viridis
+154,Woodhouse's Toad,Anaxyrus woodhousii
+155,Spiny Toad,Bufo spinosus
+156,Iberian Green Frog,Pelophylax perezi
+157,Northern Two-lined Salamander,Eurycea bislineata
+158,Agile Frog,Rana dalmatina

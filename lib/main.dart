@@ -108,23 +108,48 @@ class _MyHomePageState extends State<MyHomePage> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18),
                 ),
-                onPressed: () async {
-                  final result = await showCupertinoModalPopup(
-                    context: context,
-                    builder: (context) => AddPin(),
-                  );
+                // onPressed: () async {
+                //   final result = await showCupertinoModalPopup(
+                //     context: context,
+                //     builder: (context) => AddPin(),
+                //   );
 
-                  if (result != null) {
-                    final dynamic state = mapViewKey.currentState;
-                    if (state != null) {
-                      state.addExternalMarker(
-                        result["latitude"],
-                        result["longitude"],
-                        result["pinType"],
-                      );
-                    }
-                  }
-                },
+                //   if (result != null) {
+                //     final dynamic state = mapViewKey.currentState;
+                //     if (state != null) {
+                //       state.addExternalMarker(
+                //         result["latitude"],
+                //         result["longitude"],
+                //         result["pinType"],
+                //       );
+                //     }
+                //   }
+                // },
+                onPressed: () async {
+  final result = await showCupertinoModalPopup(
+    context: context,
+    builder: (context) => const AddPin(),
+  );
+
+  if (result != null) {
+    final dynamic state = mapViewKey.currentState;
+    if (state != null) {
+      // 1. Convert the String back to the actual Enum object
+      // We look through PinType.values to find the one with the matching title
+      final PinType selectedType = PinType.values.firstWhere(
+        (type) => type.title == result["pinType"],
+        orElse: () => PinType.sighting, // Default fallback
+      );
+
+      // 2. Pass the Enum object (selectedType) instead of just the String
+      state.addExternalMarker(
+        result["latitude"],
+        result["longitude"],
+        selectedType, 
+      );
+    }
+  }
+},
                 child: const Icon(Icons.add_location_alt_rounded, size: 28),
               ),
             ),

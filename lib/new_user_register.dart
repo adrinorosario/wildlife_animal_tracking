@@ -45,7 +45,7 @@ class _NewUserRegisterState extends State<NewUserRegister> {
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(e.message ?? "Registration Failed"),
+          content: Text("Registration Failed"),
           backgroundColor: SavannahColors.orangeCaramel,
         ),
       );

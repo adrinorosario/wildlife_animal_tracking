@@ -13,8 +13,11 @@ class SavannahColors {
   static const Color textGrey = Color(0xFF4B4B4B);
 }
 
+// class CameraCapture extends StatefulWidget {
+//   const CameraCapture({super.key});
 class CameraCapture extends StatefulWidget {
-  const CameraCapture({super.key});
+  final Function(File)? onImageCaptured;
+  const CameraCapture({super.key, this.onImageCaptured});
 
   @override
   State<CameraCapture> createState() => _CameraCaptureState();
@@ -24,12 +27,25 @@ class _CameraCaptureState extends State<CameraCapture> {
   File? image;
   final picker = ImagePicker();
 
+  // Future<void> pickImage(ImageSource source) async {
+  //   final pickedImage = await picker.pickImage(source: source);
+  //   if (pickedImage != null) {
+  //     setState(() {
+  //       image = File(pickedImage.path);
+  //     });
+  //   }
+  // }
   Future<void> pickImage(ImageSource source) async {
     final pickedImage = await picker.pickImage(source: source);
     if (pickedImage != null) {
       setState(() {
         image = File(pickedImage.path);
       });
+
+      // ADD THIS LINE to trigger classification
+      if (widget.onImageCaptured != null) {
+        widget.onImageCaptured!(image!);
+      }
     }
   }
 
