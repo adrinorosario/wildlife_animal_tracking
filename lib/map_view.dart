@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:async';
+import 'package:wildlife_tracker/add_pin.dart';
 
-// 1. Model for our sightings
+// Model for our sightings
 class WildlifeSighting {
   final LatLng position;
   final String title;
@@ -28,7 +29,7 @@ class MapViewState extends State<MapView> {
   // Initial Position: Coorg/Western Ghats region
   static const LatLng _initialCenter = LatLng(12.658833, 75.604339);
 
-  // 2. The SINGLE source of truth for markers
+  // The SINGLE source of truth for markers
   final Set<Marker> _markers = {
     Marker(
       markerId: const MarkerId('test_pin_1'),
@@ -41,7 +42,14 @@ class MapViewState extends State<MapView> {
     ),
   };
 
-  void addExternalMarker(double lat, double lng, String title) async {
+  /// This is called from main.dart when a new report is submitted.
+  /// Accepts a PinType for dynamic marker hue, or falls back to a string title.
+  void addExternalMarker(
+    double lat,
+    double lng,
+    PinType type, {
+    String? title,
+  }) async {
     final markerId = MarkerId(DateTime.now().millisecondsSinceEpoch.toString());
 
     setState(() {
@@ -49,10 +57,20 @@ class MapViewState extends State<MapView> {
         Marker(
           markerId: markerId,
           position: LatLng(lat, lng),
-          infoWindow: InfoWindow(title: title),
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueGreen,
+          infoWindow: InfoWindow(
+            title: title ?? type.title,
+            snippet: "Tap to view details",
           ),
+          icon: BitmapDescriptor.defaultMarkerWithHue(type.hue),
+          onTap: () {
+            _showPhotoPreview(
+              WildlifeSighting(
+                position: LatLng(lat, lng),
+                title: title ?? type.title,
+                imagePath: "temp",
+              ),
+            );
+          },
         ),
       );
     });
@@ -60,12 +78,12 @@ class MapViewState extends State<MapView> {
     print("Marker added at: $lat , $lng");
     print("Total markers now: ${_markers.length}");
 
+    // Animate camera to the new pin
     final controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newLatLngZoom(LatLng(lat, lng), 17));
   }
 
-  /*
-  // 3. UI Method to show the photo preview
+  // UI Method to show the photo preview
   void _showPhotoPreview(WildlifeSighting sighting) {
     showModalBottomSheet(
       context: context,
@@ -95,40 +113,14 @@ class MapViewState extends State<MapView> {
             ),
             const SizedBox(height: 10),
             Text(
-              "Location: ${sighting.position.latitude}, ${sighting.position.longitude}",
+              "Location: ${sighting.position.latitude.toStringAsFixed(4)}, ${sighting.position.longitude.toStringAsFixed(4)}",
             ),
+            const SizedBox(height: 20),
           ],
         ),
       ),
     );
   }
-  */
-
-  /*
-  // 4. Logic to add a new pin to the UI
-  void _addSightingToMap(WildlifeSighting sighting) {
-    final markerId = MarkerId(DateTime.now().millisecondsSinceEpoch.toString());
-
-    setState(() {
-      _markers.add(
-        Marker(
-          markerId: markerId,
-          position: sighting.position,
-          infoWindow: InfoWindow(
-            title: sighting.title,
-            snippet: 'Tap to view photo',
-          ),
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueAzure,
-          ),
-          onTap: () {
-            _showPhotoPreview(sighting);
-          },
-        ),
-      );
-    });
-  }
-  */
 
   @override
   Widget build(BuildContext context) {
@@ -145,29 +137,11 @@ class MapViewState extends State<MapView> {
           myLocationEnabled: true,
           myLocationButtonEnabled: true,
           compassEnabled: true,
-          markers: _markers, // Points to the Set at line 26
+          markers: _markers,
           onMapCreated: (GoogleMapController controller) {
             _controller.complete(controller);
           },
         ),
-
-        // The Simulation Button Layer
-        // Positioned(
-        //   bottom: 120, // Positioned above the bottom nav bar
-        //   right: 20,
-        //   child: FloatingActionButton(
-        //     backgroundColor: Colors.orange,
-        //     child: const Icon(Icons.camera_enhance, color: Colors.white),
-        //     onPressed: () {
-        //       // Simulating the "Take Photo" result
-        //       _addSightingToMap(WildlifeSighting(
-        //         position: const LatLng(12.6595, 75.6055), // Slightly offset from center
-        //         title: "New Tiger Sighting",
-        //         imagePath: "temp_path",
-        //       ));
-        //     },
-        //   ),
-        // ),
       ],
     );
   }

@@ -8,6 +8,8 @@ import 'package:flutter_onnxruntime/flutter_onnxruntime.dart';
 import 'dart:convert';
 import 'dart:math' as math;
 
+// class CameraCapture extends StatefulWidget {
+//   const CameraCapture({super.key});
 class CameraCapture extends StatefulWidget {
   final void Function(String)? onSpeciesIdentified;
   final void Function(File)? onImageCaptured;
@@ -91,6 +93,14 @@ class _CameraCaptureState extends State<CameraCapture> {
     }
   }
 
+  // Future<void> pickImage(ImageSource source) async {
+  //   final pickedImage = await picker.pickImage(source: source);
+  //   if (pickedImage != null) {
+  //     setState(() {
+  //       image = File(pickedImage.path);
+  //     });
+  //   }
+  // }
   Future<void> pickImage(ImageSource source) async {
     try {
       final pickedImage = await picker.pickImage(
@@ -359,6 +369,11 @@ class _CameraCaptureState extends State<CameraCapture> {
         _result = 'Error analyzing image';
         _isAnalyzing = false;
       });
+
+      // ADD THIS LINE to trigger classification
+      if (widget.onImageCaptured != null) {
+        widget.onImageCaptured!(image!);
+      }
     }
   }
 
