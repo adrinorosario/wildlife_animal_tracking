@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
   flutter_dotenv: ^6.0.0
 
   # The following adds the Cupertino Icons font to your application.
@@ -42,6 +43,7 @@ dependencies:
   image_picker: ^1.2.1
   toggle_switch: ^2.3.0
   fluttertoast: ^9.0.0
+
   firebase_core: ^4.4.0
   firebase_auth: ^6.1.4
   flutter_launcher_icons: ^0.14.4
@@ -53,7 +55,10 @@ dependencies:
   geolocator: ^14.0.2
   flutter_map: ^8.2.2
   latlong2: ^0.9.1
-  flutter_onnxruntime: ^1.6.3
+  flutter_onnxruntime: 1.6.3
+  image: ^4.1.7
+  firebase_storage: ^13.0.6
+  collection: ^1.19.1
 
 dev_dependencies:
   flutter_test:
@@ -65,6 +70,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  firebase_core_platform_interface: ^6.0.2
+  mockito: ^5.4.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -80,6 +87,7 @@ flutter:
     - assets/icon/icon.png
     - assets/background_image.jpg
     - assets/models/bioclip2_model_int8.onnx
+    - assets/models/species_embeddings.json
     - species_labels.json
 
   # An image asset can refer to one or more resolution-specific "variants", see

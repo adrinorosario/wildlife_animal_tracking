@@ -2,6 +2,8 @@ import "package:flutter/material.dart";
 import "package:wildlife_tracker/camera_capture.dart";
 import 'package:collection/collection.dart';
 
+import 'package:geolocator/geolocator.dart';
+
 enum PinType {
   injured(color: Colors.red, title: "Injured animal"),
   sighting(color: Colors.blue, title: "Animal sighting"),
@@ -46,6 +48,26 @@ class _AddPinState extends State<AddPin> {
   );
   String dropDownValue = PinType.values.first.title;
 
+  Future<Position> _getCurrentLocation() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      throw Exception("Location services disabled");
+    }
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      throw Exception("Location permanently denied");
+    }
+
+    return await Geolocator.getCurrentPosition();
+  }
+
+  String? identifiedSpecies;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,7 +81,17 @@ class _AddPinState extends State<AddPin> {
               Form(
                 child: Column(
                   children: [
-                    SizedBox(height: 250, child: CameraCapture()),
+                    SizedBox(
+                      height: 250,
+                      child: CameraCapture(
+                        onSpeciesIdentified: (species) {
+                          setState(() {
+                            identifiedSpecies = species;
+                          });
+                          debugPrint("Species identified: $species");
+                        },
+                      ),
+                    ),
                     const SizedBox(height: 30),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -69,13 +101,11 @@ class _AddPinState extends State<AddPin> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              const SizedBox(
-                                width: 100,
-                                child: Text(
-                                  "Status:",
-                                  style: TextStyle(fontSize: 16),
-                                ),
+                              const Text(
+                                "Status:",
+                                style: TextStyle(fontSize: 16),
                               ),
+                              const SizedBox(width: 16),
                               DropdownMenu<PinType>(
                                 initialSelection: PinType.values.first,
                                 onSelected: (PinType? value) {
@@ -91,13 +121,11 @@ class _AddPinState extends State<AddPin> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              const SizedBox(
-                                width: 100,
-                                child: Text(
-                                  "Siren:",
-                                  style: TextStyle(fontSize: 16),
-                                ),
+                              const Text(
+                                "Siren:",
+                                style: TextStyle(fontSize: 16),
                               ),
+                              const SizedBox(width: 16),
                               // ToggleSwitch(
                               //   minWidth: 90.0,
                               //   cornerRadius: 20.0,
@@ -156,32 +184,53 @@ class _AddPinState extends State<AddPin> {
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: ElevatedButton(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text(
-                          "Pin submitted",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        duration: const Duration(seconds: 2),
-                        width: 300,
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        backgroundColor: Colors.green[500],
-                        action: SnackBarAction(
-                          label: "Dismiss",
-                          textColor: Colors.white,
-                          onPressed: () {},
-                        ),
-                      ),
-                    );
+                  // onPressed: () {
+                  //   ScaffoldMessenger.of(context).showSnackBar(
+                  //     SnackBar(
+                  //       content: const Text(
+                  //         "Pin submitted",
+                  //         style: TextStyle(
+                  //           fontSize: 14,
+                  //           fontWeight: FontWeight.bold,
+                  //         ),
+                  //       ),
+                  //       duration: const Duration(seconds: 2),
+                  //       width: 300,
+                  //       padding: const EdgeInsets.symmetric(horizontal: 10),
+                  //       behavior: SnackBarBehavior.floating,
+                  //       shape: RoundedRectangleBorder(
+                  //         borderRadius: BorderRadius.circular(10),
+                  //       ),
+                  //       backgroundColor: Colors.green[500],
+                  //       action: SnackBarAction(
+                  //         label: "Dismiss",
+                  //         textColor: Colors.white,
+                  //         onPressed: () {},
+                  //       ),
+                  //     ),
+                  //   );
+                  // },  replacing this with real coordinates
+                  onPressed: () async {
+                    try {
+                      Position position = await _getCurrentLocation();
+
+                      print("Submitting pin...");
+                      print("Lat: ${position.latitude}");
+                      print("Lng: ${position.longitude}");
+
+                      Navigator.pop(context, {
+                        "pinType": dropDownValue,
+                        "latitude": position.latitude,
+                        "longitude": position.longitude,
+                        "species": identifiedSpecies,
+                      });
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Location error")),
+                      );
+                    }
                   },
+
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(200, 50),
                     textStyle: const TextStyle(
