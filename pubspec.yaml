@@ -158,3 +158,4 @@ flutter:
   assets:
     - assets/animal_classifier.tflite
     - assets/labels.txt
+
