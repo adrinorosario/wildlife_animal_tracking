@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wildlife_tracker/theme_colors.dart';
 import 'package:intl/intl.dart';
 
@@ -29,101 +30,145 @@ class _AlertNotificationsState extends State<AlertNotifications> {
         ),
         centerTitle: true,
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('animal_sightings')
-            .orderBy('timestamp', descending: true)
-            .snapshots(),
-        builder: (context, snapshot) {
-          // Loading state
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(
-                color: SavannahColors.greenOlive,
-              ),
-            );
-          }
+      body: _buildBody(),
+    );
+  }
 
-          // Error state
-          if (snapshot.hasError) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(32.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.error_outline, size: 48, color: Colors.red[300]),
-                    const SizedBox(height: 16),
-                    Text(
-                      "Error loading sightings",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.red[300],
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      snapshot.error.toString(),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: SavannahColors.textGrey,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
+  Widget _buildBody() {
+    final user = FirebaseAuth.instance.currentUser;
 
-          // Empty state
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(
+    if (user == null) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.lock_outline_rounded,
+              size: 64,
+              color: SavannahColors.orangeSand.withOpacity(0.5),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              "Sign in to view sightings",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: SavannahColors.textBlack,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              "You need to be signed in to\naccess recent sightings.",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, color: SavannahColors.textGrey),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('animal_sightings')
+          .snapshots(),
+      builder: (context, snapshot) {
+        // Loading state
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(color: SavannahColors.greenOlive),
+          );
+        }
+
+        // Error state
+        if (snapshot.hasError) {
+          debugPrint('Firestore stream error: ${snapshot.error}');
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.pets_rounded,
-                    size: 64,
-                    color: SavannahColors.orangeSand.withOpacity(0.5),
-                  ),
+                  Icon(Icons.error_outline, size: 48, color: Colors.red[300]),
                   const SizedBox(height: 16),
-                  const Text(
-                    "No sightings yet",
+                  Text(
+                    "Error loading sightings",
                     style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: SavannahColors.textBlack,
+                      fontSize: 16,
+                      color: Colors.red[300],
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    "Add a pin on the map to report\na wildlife sighting.",
+                  Text(
+                    snapshot.error.toString(),
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
+                    style: const TextStyle(
+                      fontSize: 13,
                       color: SavannahColors.textGrey,
                     ),
                   ),
                 ],
               ),
-            );
-          }
-
-          // Data state
-          final docs = snapshot.data!.docs;
-
-          return ListView.builder(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
-            itemCount: docs.length,
-            itemBuilder: (context, index) {
-              final data = docs[index].data() as Map<String, dynamic>;
-              return _SightingCard(data: data);
-            },
+            ),
           );
-        },
-      ),
+        }
+
+        // Empty state
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.pets_rounded,
+                  size: 64,
+                  color: SavannahColors.orangeSand.withOpacity(0.5),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  "No sightings yet",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: SavannahColors.textBlack,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  "Add a pin on the map to report\na wildlife sighting.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: SavannahColors.textGrey,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        // Data state — sort client-side by timestamp (descending)
+        final docs = snapshot.data!.docs.toList()
+          ..sort((a, b) {
+            final aData = a.data() as Map<String, dynamic>;
+            final bData = b.data() as Map<String, dynamic>;
+            final aTs = aData['timestamp'] as Timestamp?;
+            final bTs = bData['timestamp'] as Timestamp?;
+            if (aTs == null && bTs == null) return 0;
+            if (aTs == null) return 1;
+            if (bTs == null) return -1;
+            return bTs.compareTo(aTs);
+          });
+
+        return ListView.builder(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
+          itemCount: docs.length,
+          itemBuilder: (context, index) {
+            final data = docs[index].data() as Map<String, dynamic>;
+            return _SightingCard(data: data);
+          },
+        );
+      },
     );
   }
 }
@@ -320,7 +365,7 @@ class _SightingCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      "${(latitude as double).toStringAsFixed(4)}, ${(longitude as double).toStringAsFixed(4)}",
+                      "${latitude.toDouble().toStringAsFixed(4)}, ${longitude.toDouble().toStringAsFixed(4)}",
                       style: const TextStyle(
                         fontSize: 12,
                         color: SavannahColors.textGrey,

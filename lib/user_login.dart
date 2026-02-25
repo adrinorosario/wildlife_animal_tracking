@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wildlife_tracker/auth_services.dart';
-import 'package:wildlife_tracker/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wildlife_tracker/new_user_register.dart';
 import 'package:sign_in_button/sign_in_button.dart';
@@ -36,21 +35,28 @@ class _UserLoginState extends State<UserLogin> {
         email: _emailController.text,
         password: _passwordController.text,
       );
+      // Pop all routes back to root — AuthLayout will show MyHomePage
       if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          CupertinoPageRoute(
-            builder: (context) => MyHomePage(title: "Wildlife Tracker"),
+        Navigator.of(context).popUntil((route) => route.isFirst);
+      }
+    } on FirebaseAuthException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.message ?? "Login Failed"),
+            backgroundColor: SavannahColors.orangeCaramel,
           ),
         );
       }
-    } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Login Failed"),
-          backgroundColor: SavannahColors.orangeCaramel,
-        ),
-      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Login Failed: $e"),
+            backgroundColor: SavannahColors.orangeCaramel,
+          ),
+        );
+      }
     } finally {
       if (mounted) setState(() => _isLoggingIn = false);
     }
@@ -229,10 +235,15 @@ class _UserLoginState extends State<UserLogin> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          _socialButton(
-                            Buttons.google,
-                            () => authServices.value.signInWithGoogle(),
-                          ),
+                          _socialButton(Buttons.google, () async {
+                            final result = await authServices.value
+                                .signInWithGoogle();
+                            if (result != null && mounted) {
+                              Navigator.of(
+                                context,
+                              ).popUntil((route) => route.isFirst);
+                            }
+                          }),
                           const SizedBox(width: 25),
                           _socialButton(Buttons.apple, () {}),
                         ],

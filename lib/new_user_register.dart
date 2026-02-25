@@ -2,9 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:wildlife_tracker/auth_services.dart';
-import 'package:wildlife_tracker/main.dart';
 import 'package:wildlife_tracker/theme_colors.dart';
-// import 'package:wildlife_tracker/user_login.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 
 class NewUserRegister extends StatefulWidget {
@@ -37,19 +35,28 @@ class _NewUserRegisterState extends State<NewUserRegister> {
         email: _emailController.text,
         password: _passwordController.text,
       );
+      // Pop all routes back to root — AuthLayout will show MyHomePage
       if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          CupertinoPageRoute(builder: (context) => MyHomePage(title: "Animap")),
-        );
+        Navigator.of(context).popUntil((route) => route.isFirst);
       }
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Registration Failed"),
-          backgroundColor: SavannahColors.orangeCaramel,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.message ?? "Registration Failed"),
+            backgroundColor: SavannahColors.orangeCaramel,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Registration Failed: $e"),
+            backgroundColor: SavannahColors.orangeCaramel,
+          ),
+        );
+      }
     } finally {
       if (mounted) setState(() => _isRegistering = false);
     }
@@ -178,7 +185,9 @@ class _NewUserRegisterState extends State<NewUserRegister> {
                         ),
                       const SizedBox(height: 15),
                       TextButton(
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
                         child: Text.rich(
                           TextSpan(
                             text: "Already a ranger? ",
@@ -209,10 +218,15 @@ class _NewUserRegisterState extends State<NewUserRegister> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          _socialButton(
-                            Buttons.google,
-                            () => authServices.value.signInWithGoogle(),
-                          ),
+                          _socialButton(Buttons.google, () async {
+                            final result = await authServices.value
+                                .signInWithGoogle();
+                            if (result != null && mounted) {
+                              Navigator.of(
+                                context,
+                              ).popUntil((route) => route.isFirst);
+                            }
+                          }),
                           const SizedBox(width: 25),
                           _socialButton(Buttons.apple, () {}),
                         ],

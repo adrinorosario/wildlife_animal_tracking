@@ -5,8 +5,8 @@ import 'package:wildlife_tracker/user_profile.dart';
 import 'package:wildlife_tracker/alert_notifications.dart';
 import 'package:wildlife_tracker/add_pin.dart';
 import 'package:wildlife_tracker/map_view.dart';
-// import 'package:wildlife_tracker/auth_layout.dart';
-// import 'package:wildlife_tracker/user_login.dart';
+import 'package:wildlife_tracker/auth_layout.dart';
+import 'package:wildlife_tracker/user_login.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -39,7 +39,10 @@ class MyApp extends StatelessWidget {
           primary: SavannahColors.greenOlive,
         ),
       ),
-      home: const MyHomePage(title: "Animap"),
+      home: const AuthLayout(
+        pageIfNotConnected: UserLogin(),
+        child: MyHomePage(title: "Animap"),
+      ),
     );
   }
 }
@@ -116,30 +119,30 @@ class _MyHomePageState extends State<MyHomePage> {
                 //   }
                 // },
                 onPressed: () async {
-  final result = await showCupertinoModalPopup(
-    context: context,
-    builder: (context) => const AddPin(),
-  );
+                  final result = await showCupertinoModalPopup(
+                    context: context,
+                    builder: (context) => const AddPin(),
+                  );
 
-  if (result != null) {
-    final dynamic state = mapViewKey.currentState;
-    if (state != null) {
-      // 1. Convert the String back to the actual Enum object
-      // We look through PinType.values to find the one with the matching title
-      final PinType selectedType = PinType.values.firstWhere(
-        (type) => type.title == result["pinType"],
-        orElse: () => PinType.sighting, // Default fallback
-      );
+                  if (result != null) {
+                    final dynamic state = mapViewKey.currentState;
+                    if (state != null) {
+                      // 1. Convert the String back to the actual Enum object
+                      // We look through PinType.values to find the one with the matching title
+                      final PinType selectedType = PinType.values.firstWhere(
+                        (type) => type.title == result["pinType"],
+                        orElse: () => PinType.sighting, // Default fallback
+                      );
 
-      // 2. Pass the Enum object (selectedType) instead of just the String
-      state.addExternalMarker(
-        result["latitude"],
-        result["longitude"],
-        selectedType, 
-      );
-    }
-  }
-},
+                      // 2. Pass the Enum object (selectedType) instead of just the String
+                      state.addExternalMarker(
+                        result["latitude"],
+                        result["longitude"],
+                        selectedType,
+                      );
+                    }
+                  }
+                },
                 child: const Icon(Icons.add_location_alt_rounded, size: 28),
               ),
             ),
